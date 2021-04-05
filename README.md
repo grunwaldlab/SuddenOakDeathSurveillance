@@ -2,18 +2,18 @@
 Documentation for the nextstrain software installed on the oomy webserver
 
 ## Oomy installation
-The [nextstrain][https://nextstrain.org/] gitbub repository can be found freely
-available [here][https://github.com/nextstrain] along with some installation
-and usage [documentation][https://docs.nextstrain.org/en/latest/index.html].
+The [nextstrain](https://nextstrain.org/) gitbub repository can be found freely
+available [here](https://github.com/nextstrain) along with some installation
+and usage [documentation](https://docs.nextstrain.org/en/latest/index.html).
 
 Nextstrain was installed on the oomy webserver according to the local
-installation [guide][https://docs.nextstrain.org/en/latest/guides/install/local-installation.html].
+installation [guide](https://docs.nextstrain.org/en/latest/guides/install/local-installation.html).
 The conda environment created is stored locally on the oomy webserver and is
 distinct from the CGRB conda environment. This distinction will be important
 when the website is deployed for public use.
 
 
-## Quickstart guide for Viewing nexstrain in a web browser
+## Quickstart guide for viewing nexstrain in a web browser
 For now, the installed nextstrain website is only viewable to those who have
 ssh access to the oomy webserver. To view the website in a local browser, one
 needs to execute the following command on their local command line prompt
@@ -52,7 +52,56 @@ browser. Since oomy is a remote server, we cannot simply open up a chrome
 browser on oomy to view the website. Instead, we had to forward the local
 oomy port to a local machine for viewing, which is what the above ssh command
 accomplishes. Note that this is only a temporary solution as port 8890 was
-originally designated for running jupytor notebooks.
+originally designated for running jupytor notebooks. For convenience, I have
+run the above command using `nohup` and redirected output to /dev/null which
+should allow the program to run until I manually kill it.
 
+## Playing with nextstrain command line utilities
+In addition to the website, nextstrain provides a few command line utilities
+which can be used for building the website data files and some bioinformatic
+analysis. TO utilize this, one must be logged into the oomy webserver.
 
+Nextstrain was installed according to the conda environment guidelines which
+means that the command line utilities are only available within the nextstrain
+conda environment. The following instructions may differ depending on whether
+conda has been used previously on CGRB.
+
+When logged into oomy, one should first attempt to view the available conda
+environments within bash using the following commands. First login to a bash
+shell:
+
+`bash`
+
+Then view the available conda environments:
+
+`conda env list`
+
+If an error messsage is reported allong the lines of: "Your shell has not been
+properly configured to use conda ...", one needs to first run:
+
+`conda init bash`
+
+This will initialize the conda environment and update the users .bashrc file
+s.t. the conda environment list are known upon login. You may need to restart
+the terminal session for the effects to become active.
+
+Assuming no error was reported, one should see a list of environments with
+names and locations. Paths which start with `/local/cluster/miniconda2` are
+global for all CGRB resources. The nextstrain install is local to oomy and so
+we are looking for: `/usr/local/webconda/master/nextstrain`. If this is your
+first time attempting this you will likely not see this entry. This is because
+conda does not know where to look. To have conda search the correct paths, run:
+
+`source /usr/local/webconda/master/bin/activate`
+
+Re-running `conda env list` should now display
+`/usr/local/webconda/master/nextstrain`. To enter the nextstrain conda
+environment, we run:
+
+conda activate /usr/local/webconda/master/nextstrain
+
+This will activate the conda environment and one should now be able to run
+the nextstrain command line utities. For instance:
+
+`nextstrain -h`
 
