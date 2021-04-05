@@ -52,14 +52,14 @@ browser. Since oomy is a remote server, we cannot simply open up a chrome
 browser on oomy to view the website. Instead, we had to forward the local
 oomy port to a local machine for viewing, which is what the above ssh command
 accomplishes. Note that this is only a temporary solution as port 8890 was
-originally designated for running jupytor notebooks. For convenience, I have
+originally designated for running jupyter notebooks. For convenience, I have
 run the above command using `nohup` and redirected output to /dev/null which
 should allow the program to run until I manually kill it.
 
 ## Playing with nextstrain command line utilities
 In addition to the website, nextstrain provides a few command line utilities
 which can be used for building the website data files and some bioinformatic
-analysis. TO utilize this, one must be logged into the oomy webserver.
+analysis. To utilize this, one must be logged into the oomy webserver.
 
 Nextstrain was installed according to the conda environment guidelines which
 means that the command line utilities are only available within the nextstrain
@@ -82,8 +82,8 @@ properly configured to use conda ...", one needs to first run:
 `conda init bash`
 
 This will initialize the conda environment and update the users .bashrc file
-s.t. the conda environment list are known upon login. You may need to restart
-the terminal session for the effects to become active.
+such that the conda environment list are known upon login.
+You may need to restart the terminal session for the effects to become active.
 
 Assuming no error was reported, one should see a list of environments with
 names and locations. Paths which start with `/local/cluster/miniconda2` are
@@ -98,7 +98,7 @@ Re-running `conda env list` should now display
 `/usr/local/webconda/master/nextstrain`. To enter the nextstrain conda
 environment, we run:
 
-conda activate /usr/local/webconda/master/nextstrain
+`conda activate /usr/local/webconda/master/nextstrain`
 
 This will activate the conda environment and one should now be able to run
 the nextstrain command line utities. For instance:
