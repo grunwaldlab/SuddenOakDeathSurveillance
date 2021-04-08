@@ -105,3 +105,46 @@ the nextstrain command line utities. For instance:
 
 `nextstrain -h`
 
+
+## Running augur on oomy
+
+I began testing the augur install on oomy by following the
+[zika] (https://docs.nextstrain.org/en/latest/tutorials/zika.html)
+tutorial. In the "Align the Sequences" section I ran into an error regarding
+permission on creating new files. In short, augur align calls mafft which
+attempts to create temporary files at `$TMPDIR`. Normally, this runs without
+issue, however, since oomy is set up on the CGRB infrastructure, $TMPDIR is
+set to the "scratch" workspace /data/. Since /data/ has restricted permissions
+on oomy, I had to reset $TMPDIR to /tmp using:
+
+`export TMPDIR=/tmp/`
+
+This could be addressed on the oomy system as a whole, however, that would
+interfere with any CGRB jobs submitted to the job queue when logged into oomy.
+For the time being, the value of TMPDIR will need to be changed prior to 
+command execution.
+
+
+### Observations
+#### Fasta file input
+Each entry is a different lineage. Can't have multi-scaffold genomes?
+
+#### indexing
+Just counts number of nucleotides in fasta file.
+
+#### Filtering
+Removes strains found in "config/dropped_strains.txt".
+Resamples remaining strains? <- Based on "virus" column of metadata.tsv 
+
+#### Align
+Aligning takes a reference sequence found in "config/zika_outgroup.gb"
+What formats are allowed here?
+Use:
+
+`--reference-name NAME`
+
+if reference sequence is in the fasta file. According to augur translate, the
+reference sequence should be of the form:
+
+  --reference-sequence REFERENCE_SEQUENCE
+                        GenBank or GFF file containing the annotation
