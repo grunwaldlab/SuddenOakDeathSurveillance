@@ -56,6 +56,30 @@ originally designated for running jupyter notebooks. For convenience, I have
 run the above command using `nohup` and redirected output to /dev/null which
 should allow the program to run until I manually kill it.
 
+#### Update
+It appears that `nextstrain view` does not allow for narratives, which is odd
+and likely an oversight. To get narratives to work, I had to work around this
+by running auspice directly, which under the covers, nextstrain calls auspice
+anyways.
+
+`auspice view` allows for specifications of a data and narrative directory but
+does not allow for specification of a port #. According to the nextstrain docs,
+auspice respects the HOST and PORT environmental varriables. Therefore I ran
+the following commands to first set the localhost and port, and then called
+auspice view through nohup:
+
+`export HOST=127.0.0.1`
+`export PORT=8890`
+
+`nohup auspice view --datasetDir=data/ --narrativeDir=narratives/ >/dev/null 2>/dev/null </dev/null &`
+
+#### Update2
+I added activate and deactivate scripts to
+`/usr/local/webconda/master/nextstrain/etc/conda/` which automatically set
+the $TMPDIR, $HOST, $PORT environmental variables so these no longer need to be
+specified manually.
+
+
 ## Playing with nextstrain command line utilities
 In addition to the website, nextstrain provides a few command line utilities
 which can be used for building the website data files and some bioinformatic
@@ -106,45 +130,3 @@ the nextstrain command line utities. For instance:
 `nextstrain -h`
 
 
-## Running augur on oomy
-
-I began testing the augur install on oomy by following the
-[zika] (https://docs.nextstrain.org/en/latest/tutorials/zika.html)
-tutorial. In the "Align the Sequences" section I ran into an error regarding
-permission on creating new files. In short, augur align calls mafft which
-attempts to create temporary files at `$TMPDIR`. Normally, this runs without
-issue, however, since oomy is set up on the CGRB infrastructure, $TMPDIR is
-set to the "scratch" workspace /data/. Since /data/ has restricted permissions
-on oomy, I had to reset $TMPDIR to /tmp using:
-
-`export TMPDIR=/tmp/`
-
-This could be addressed on the oomy system as a whole, however, that would
-interfere with any CGRB jobs submitted to the job queue when logged into oomy.
-For the time being, the value of TMPDIR will need to be changed prior to 
-command execution.
-
-
-### Observations
-#### Fasta file input
-Each entry is a different lineage. Can't have multi-scaffold genomes?
-
-#### indexing
-Just counts number of nucleotides in fasta file.
-
-#### Filtering
-Removes strains found in "config/dropped_strains.txt".
-Resamples remaining strains? <- Based on "virus" column of metadata.tsv 
-
-#### Align
-Aligning takes a reference sequence found in "config/zika_outgroup.gb"
-What formats are allowed here?
-Use:
-
-`--reference-name NAME`
-
-if reference sequence is in the fasta file. According to augur translate, the
-reference sequence should be of the form:
-
-  --reference-sequence REFERENCE_SEQUENCE
-                        GenBank or GFF file containing the annotation
