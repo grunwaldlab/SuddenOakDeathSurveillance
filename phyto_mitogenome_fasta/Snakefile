@@ -5,7 +5,8 @@ rule all:
 # Set input filenames
 #seq_file = "data/genotyped_globaldiv_n44_mito_sb10m.abbr_head.vcf.gz"
 #seq_file = "data/genotyped_globaldiv_plat_ksond_n63_200x.abbr_head.vcf.gz"
-seq_file = "data/globaldiv_n56.cat.fasta"
+#seq_file = "data/globaldiv_n56.cat.fasta"
+seq_file = "data/globaldiv_n58_trimreads_trimoverhang.cat.fasta"
 #meta_file = "data/globaldiv_n44.metadata.tsv"
 meta_file = "data/meta.tsv"
 ref_file = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
