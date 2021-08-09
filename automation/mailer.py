@@ -11,6 +11,7 @@ class CaseConfigParser(configparser.ConfigParser):
     def optionxform(self, optionstr):
         return optionstr
 
+
 def init(args):
     """ Initialize a new config file """
     # Initialize new config file
@@ -91,7 +92,7 @@ if __name__ == "__main__":
             "--path",
             type=str,
             default="/sbin/sendmail",
-            help="Path to sendmail") 
+            help="Path to sendmail")
     parser.add_argument(
             "body",
             type=str,
