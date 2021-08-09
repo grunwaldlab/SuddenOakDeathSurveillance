@@ -1,3 +1,4 @@
+#! /bin/env python3
 import os
 import sys
 import argparse
@@ -72,6 +73,7 @@ def updatedb(db, pathname):
 
 
 def init(args):
+    """ Initialize a new config file """
     # Initialize new config file
     config = CaseConfigParser(allow_no_value=True)
 
@@ -93,6 +95,7 @@ def init(args):
 
 
 def run(args):
+    """ Check for files hich have changed, and run worker script """
     # Run watcher based on config file
     config = CaseConfigParser(allow_no_value=True)
     config.read(args.config)
@@ -137,11 +140,15 @@ def run(args):
         print(f"Modified: {pathname}")
 
     # Call worker script
-    modified = ' '.join([str(x) for x in modified])
-    command = f"{config['Settings']['Worker']} {modified}"
-    exit_code = os.system(command)
-    if exit_code != 0:
-        print(f"\'{command}\' returned with exit code: {exit_code}")
+    if len(modified):
+        # Create command to run
+        modified = ' '.join([str(x) for x in modified])
+        command = f"{config['Settings']['Worker']} {modified}"
+
+        # Execute command and catch exit code
+        exit_code = os.system(command)
+        if exit_code != 0:
+            print(f"\'{command}\' returned with exit code: {exit_code}")
 
 
 if __name__ == "__main__":
