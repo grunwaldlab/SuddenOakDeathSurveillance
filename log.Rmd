@@ -11,6 +11,14 @@ clipr::write_clip(paste0('## ', format(Sys.time(), "%F (%A %B %e)\n\n")))
 clipr::write_clip(paste0('## ', format(Sys.time(), "%F %X %Z (%A %B %e)\n\n")))
 ```
 
+## 2022-02-09 (Wednesday February  9)
+
+Read `kumar2016advances`. Notes are in the literature review.
+
+## 2022-02-02 (Wednesday February  2)
+
+read `nguyen2015iq`, `minh2020iq`, and `sagulenko2018treetime` which describe `IQ-TREE` and `TreeTime`.
+Notes are in the literature review.
 
 ## 2022-02-01 (Tuesday February  1)
 

@@ -1,0 +1,151 @@
+---
+title: "Format input files"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Make metadata file
+
+Downloaded data from:
+
+https://datagateway.nrcs.usda.gov/
+
+A way to group points by shapes they are in:
+
+https://gis.stackexchange.com/questions/133625/checking-if-points-fall-within-polygon-shapefile
+
+```{r}
+library(rgeos)
+library(sp)
+library(sf)
+library(rgdal)
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
+```
+
+### Plot data over watershed boundries
+
+https://stackoverflow.com/questions/18174703/spatialpolygondataframe-plotting-using-ggplot
+
+```{r}
+polys <- st_read('data/hydrologic_units_WBDHU12_mbr_3971222_03/hydrologic_units/wbdhu12_a_mbr.shp')
+# polys <- st_read('data/hydrologic_units_WBDHU10_mbr_3971222_02/hydrologic_units/wbdhu10_a_mbr.shp')
+ggplot(polys) +
+  geom_sf() + 
+  geom_point(data = metadata, mapping = aes(x = lon, y = lat)) + 
+  xlim(-124.5, -124.2) +
+  ylim(42.05, 42.4)
+```
+
+Even the finest resolution watershed info available is not very detailed compared to the sample extent.
+
+
+### find which watersheds each sample is in
+
+```{r}
+watersheds <- readOGR('data/hydrologic_units_WBDHU12_mbr_3971222_03/hydrologic_units/wbdhu12_a_mbr.shp')
+metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
+
+# Assignment modified according
+meta_subset <- filter(metadata, !is.na(lon))
+coordinates(meta_subset) <- ~ lon + lat
+# Set the projection of the SpatialPointsDataFrame using the projection of the shapefile
+proj4string(meta_subset) <- proj4string(watersheds)
+meta_subset_placements <- as_tibble(over(meta_subset, watersheds))
+# Combine with metadata
+meta_subset$watershed <- meta_subset_placements$name
+metadata <- left_join(metadata, as_tibble(meta_subset)[, c("strain", "watershed")], by = "strain")
+```
+
+find centroid coordinates of each watershed
+
+```{r}
+centroid_data <- as_tibble(gCentroid(watersheds, byid = TRUE))
+colnames(centroid_data) <- c("watershed_lon", "watershed_lat")
+centroid_data <- bind_cols(watershed = watersheds@data$name, centroid_data)
+metadata <- left_join(metadata, centroid_data, by = "watershed")
+```
+
+
+add a finer resolution classification based on grids
+
+```{r}
+range(metadata$lat, na.rm = TRUE)
+range(metadata$lon, na.rm = TRUE)
+diff(range(metadata$lat, na.rm = TRUE))
+diff(range(metadata$lon, na.rm = TRUE))
+metadata$rounded_lat <- round(metadata$lat, digits = 2)
+metadata$rounded_lon <- round(metadata$lon, digits = 2)
+metadata$grid <- paste0(metadata$rounded_lat, ', ', metadata$rounded_lon)
+metadata$grid[metadata$grid == "NA, NA"] <- NA
+```
+
+fix date format
+
+```{r}
+metadata$date <- paste0(metadata$year, '-01-01')
+```
+
+save metadata file
+
+```{r}
+write_tsv(metadata, file = file.path('data', 'metadata_modified.tsv'))
+```
+
+
+## Make coordinate file
+
+```{r}
+watershed_data <- metadata %>%
+  filter(!is.na(watershed)) %>%
+  mutate(group = "watershed") %>%
+  select(group, name = watershed, lat = watershed_lat, lon = watershed_lon) %>%
+  distinct()
+grid_data <- metadata %>%
+  filter(!is.na(grid)) %>%
+  mutate(group = "grid") %>%
+  select(group, name = grid, lat = rounded_lat,  lon = rounded_lon) %>%
+  distinct()
+coord_data <- bind_rows(watershed_data, grid_data)
+write_tsv(coord_data, file = file.path("config", "lat_longs.tsv"), col_names = FALSE)
+```
+
+
+## Make dropped strains file
+
+These will be filtered out of the analysis.
+First, I will remove the reference strain, since that gets assigned a date in 1980 for some reason and that is confusing:
+
+```{r}
+dropped_ids <- c('MT_DQ832718.1')
+```
+
+And all IDs associated with a missing location:
+
+```{r}
+dropped_ids <- c(dropped_ids, metadata$strain[is.na(metadata$lon)])
+```
+
+And write the file, one ID per line:
+
+```{r}
+write_lines(dropped_ids, file = file.path("config", "dropped_strains.txt"))
+```
+
+
+## Make color file
+
+```{r}
+color_data <- coord_data %>%
+  select(group, name) %>%
+  mutate(color = viridis(length(group)))
+color_data$color <- substr(color_data$color, start = 1, stop = 7)
+write_tsv(color_data, file = file.path("config", "colors.tsv"), col_names = FALSE)
+```
+

@@ -1,0 +1,41 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Checking that the metadata and genome names line up
+
+```{r}
+library(tidyverse)
+metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
+seqs <- metacoder::read_fasta('data/curryco_mt.fasta')
+
+all(names(seqs) %in% metadata$strain)
+all(metadata$strain %in% names(seqs))
+```
+
+seems to be fine
+
+
+## Figure out how to group samples geographically
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
+```
+
+plot sites to see if sites would be a good grouping
+
+```{r}
+metadata %>%
+  mutate(site = factor(site)) %>%
+  ggplot() +
+  geom_point(aes(x = lon, y = lat, color = site))
+```
+

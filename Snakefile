@@ -1,18 +1,12 @@
 rule all:
     input:
-        auspice_json = "auspice/phyto_mt_fasta.json"
+        auspice_json = "auspice/Curry-County.json"
 
 # Set input filenames
-#seq_file = "data/genotyped_globaldiv_n44_mito_sb10m.abbr_head.vcf.gz"
-#seq_file = "data/genotyped_globaldiv_plat_ksond_n63_200x.abbr_head.vcf.gz"
-#seq_file = "data/globaldiv_n56.cat.fasta"
-seq_file = "data/globaldiv_n58_trimreads_trimoverhang.cat.fasta"
-#meta_file = "data/globaldiv_n44.metadata.tsv"
-meta_file = "data/meta.tsv"
+seq_file = "data/curryco_mt.fasta"
+meta_file = "data/metadata_modified.tsv"
 ref_file = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
-#ref_file = "globaldiv_n56.cat.fasta" 
 generef_file = "data/MT_DQ832718.1.gb"
-#generef_file = "data/Genes.GFF3"
 dropped_strains = "config/dropped_strains.txt"
 
 #reference_fasta = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
@@ -98,9 +92,9 @@ rule refine:
         tree = "results/tree.nwk",
         node_data = "results/branch_lengths.json"
     params:
-        root_lat = "Plat_MPF4 Plat_MPF6 Plat_RH_5 Plat_SMST21 Plat_SMSTG",
-        root_jap = "PR-18-126_JP PR-18-128_JP PR-18-130_JP PR-18-132_JP PR-18-133_JP PR-18-134_JP",
-        root_EU2 = "Pram_P2111_EU2 Pram_P2460_EU2 Pram_P2461_EU2 Pram_P2561_EU2 Pram_P2586_EU2",
+#        root_lat = "Plat_MPF4 Plat_MPF6 Plat_RH_5 Plat_SMST21 Plat_SMSTG",
+#        root_jap = "PR-18-126_JP PR-18-128_JP PR-18-130_JP PR-18-132_JP PR-18-133_JP PR-18-134_JP",
+#        root_EU2 = "Pram_P2111_EU2 Pram_P2460_EU2 Pram_P2461_EU2 Pram_P2561_EU2 Pram_P2586_EU2",
         root = "oldest",
         coal = "opt"
     shell:
@@ -109,7 +103,7 @@ rule refine:
             --tree {input.tree} \
             --alignment {input.aln} \
             --metadata {input.metadata} \
-            --root {params.root_EU2} \
+            --timetree \
             --coalescent {params.coal} \
             --output-tree {output.tree} \
             --output-node-data {output.node_data}

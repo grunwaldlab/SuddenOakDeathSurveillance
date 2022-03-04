@@ -130,3 +130,13 @@ dmypy.json
 
 # Snakefile
 .snakemake/
+
+# R
+.Rproj.user
+.Rhistory
+*.html
+
+results/
+old/results/
+old/auspice/
+data/

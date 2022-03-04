@@ -1,0 +1,31 @@
+{
+  "title": "Phytophthora ramorum",
+  "maintainers": [
+    {
+      "name": "Andrew Tupper",
+      "name": "Zachary Foster"
+    }
+  ],
+  "build_url": "",
+  "colorings": [
+    {
+      "key": "virus",
+      "title": "Lineage",
+      "type": "categorical"
+    },
+    {
+      "key": "date",
+      "title": "Date",
+      "type": "continuous"
+    }
+  ],
+  "geo_resolutions": [
+    "watershed",
+    "grid"
+  ],
+  "display_defaults": {
+    "map_triplicate": true
+  },
+  "filters": [
+  ]
+}
