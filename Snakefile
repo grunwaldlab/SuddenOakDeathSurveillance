@@ -1,6 +1,6 @@
 rule all:
     input:
-        auspice_json = "auspice/Curry-County.json"
+        auspice_json = "auspice/nextstrainoomy.json"
 
 # Set input filenames
 seq_file = "data/curryco_mt.fasta"

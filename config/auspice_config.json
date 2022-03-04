@@ -1,10 +1,10 @@
 {
   "title": "Phytophthora ramorum",
   "maintainers": [
-    {
-      "name": "Andrew Tupper",
-      "name": "Zachary Foster"
-    }
+    {"name": "Zachary Foster"},
+    {"name": "Andrew Tupper"},
+    {"name": "Nick Carleson"},
+    {"name": "Niklaus Grunwald"}
   ],
   "build_url": "",
   "colorings": [
