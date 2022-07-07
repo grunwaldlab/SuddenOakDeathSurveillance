@@ -1,5 +1,5 @@
 {
-  "title": "Phytophthora ramorum in Curry County, Oregon",
+  "title": "Phytophthora ramorum isolates worldwide",
   "maintainers": [
     {"name": "Zachary Foster"},
     {"name": "Andrew Tupper"},
@@ -9,7 +9,7 @@
   "build_url": "",
   "colorings": [
     {
-      "key": "virus",
+      "key": "lineage",
       "title": "Lineage",
       "type": "categorical"
     },
@@ -17,11 +17,16 @@
       "key": "date",
       "title": "Date",
       "type": "continuous"
+    },
+    {
+      "key": "source",
+      "title": "Source",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
-    "watershed",
-    "grid"
+    "Country",
+    "State"
   ],
   "display_defaults": {
     "map_triplicate": true

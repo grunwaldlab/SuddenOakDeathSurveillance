@@ -11,6 +11,29 @@ clipr::write_clip(paste0('## ', format(Sys.time(), "%F (%A %B %e)\n\n")))
 clipr::write_clip(paste0('## ', format(Sys.time(), "%F %X %Z (%A %B %e)\n\n")))
 ```
 
+## 2022-05-12 (Thursday May 12)
+
+Meeting with Val to discuss metadata for mitochondiral isolets
+
+## 2022-04-13 (Wednesday April 13)
+
+Metadata collection cannot be automated due to diverse sources.
+
+Start with a metadata file `pram_lookuptable_clean_added_info_lineages.tsv`
+
+Culture collection spreadsheet has info for some strains
+
+* location
+* lineage
+* year/date
+* host
+* environment
+
+
+## 2022-04-12 (Tuesday April 12)
+
+Met with Nick to discuss the organizing metadata for all ramorum isolates, instead of just curry county.
+
 ## 2022-02-09 (Wednesday February  9)
 
 Read `kumar2016advances`. Notes are in the literature review.

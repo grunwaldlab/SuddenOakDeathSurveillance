@@ -1,42 +1,17 @@
-watershed	North Fork Chetco River	#440154
-watershed	Jack Creek-Chetco River	#460A5D
-watershed	Crook Creek-Pistol River	#471366
-watershed	Myers Creek-Frontal Pacific Ocean	#481C6E
-watershed	Lower Hunter Creek	#482475
-grid	42.1, -124.26	#472C7A
-grid	42.11, -124.26	#46337F
-grid	42.07, -124.26	#443A84
-grid	42.12, -124.26	#414287
-grid	42.08, -124.26	#3E4989
-grid	42.07, -124.25	#3C508B
-grid	42.09, -124.27	#39578C
-grid	42.09, -124.28	#355E8D
-grid	42.11, -124.25	#32648E
-grid	42.09, -124.25	#306A8E
-grid	42.14, -124.27	#2D708E
-grid	42.1, -124.25	#2B768E
-grid	42.1, -124.27	#287C8E
-grid	42.08, -124.25	#26828E
-grid	42.15, -124.27	#24878E
-grid	42.08, -124.27	#228D8D
-grid	42.1, -124.28	#20938C
-grid	42.11, -124.24	#1F998A
-grid	42.29, -124.4	#1F9F88
-grid	42.3, -124.4	#20A486
-grid	42.29, -124.39	#25AA83
-grid	42.31, -124.4	#2AB07F
-grid	42.3, -124.39	#32B67A
-grid	42.32, -124.4	#3BBB75
-grid	42.33, -124.41	#47C06F
-grid	42.34, -124.36	#53C568
-grid	42.3, -124.38	#60CA60
-grid	42.33, -124.38	#6ECE58
-grid	42.33, -124.4	#7DD250
-grid	42.33, -124.39	#8CD645
-grid	42.35, -124.41	#9CD93B
-grid	42.29, -124.38	#ADDC30
-grid	42.32, -124.41	#BDDF26
-grid	42.34, -124.41	#CEE11D
-grid	42.32, -124.38	#DEE318
-grid	42.32, -124.37	#EEE51C
-grid	42.34, -124.38	#FDE725
+Country	USA	#440154
+Country	Germany	#48186A
+Country	Belgium	#472D7B
+Country	UK	#424086
+Country	Japan	#3B528B
+Country	England	#33638D
+Country	Northern Ireland	#2C728E
+Country	Scotland	#26828E
+Country	Netherlands	#21908C
+Country	Vietnam	#1F9F88
+State	OR	#27AD81
+State	CA	#3EBC74
+State	NC	#5DC863
+State	SC	#82D34D
+State	WA	#AADC32
+State	GA	#D5E21A
+State	MS	#FDE725

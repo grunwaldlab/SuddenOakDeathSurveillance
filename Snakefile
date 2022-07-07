@@ -3,7 +3,7 @@ rule all:
         auspice_json = "auspice/nextstrainoomy.json"
 
 # Set input filenames
-seq_file = "data/curryco_mt.fasta"
+seq_file = "data/global_n661_mt.fasta"
 meta_file = "data/metadata_modified.tsv"
 ref_file = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
 generef_file = "data/MT_DQ832718.1.gb"
@@ -14,8 +14,6 @@ dropped_strains = "config/dropped_strains.txt"
 #input_meta = "data/globaldiv_n44.metadata.tsv"
 #reference_gb = "data/MT_DQ832718.1.gb"
 
-
-# From zika
 colors_file = "config/colors.tsv",
 geo_info_file = "config/lat_longs.tsv",
 config_file = "config/auspice_config.json"
@@ -152,7 +150,7 @@ rule traits:
     output:
         "results/traits.json",
     params:
-        traits_alt = "lineage mating_type country county state date",
+        traits_alt = "Lineage Country State date",
         traits = "date"
     shell:
         """

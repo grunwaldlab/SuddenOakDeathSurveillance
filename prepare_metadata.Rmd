@@ -10,14 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Make metadata file
 
-Downloaded data from:
-
-https://datagateway.nrcs.usda.gov/
-
-A way to group points by shapes they are in:
-
-https://gis.stackexchange.com/questions/133625/checking-if-points-fall-within-polygon-shapefile
-
 ```{r}
 library(rgeos)
 library(sp)
@@ -26,70 +18,43 @@ library(rgdal)
 library(tidyverse)
 library(ggplot2)
 library(viridis)
-metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
+library(ggmap)
+library(geonames)
+library(metacoder)
+metadata <- read_csv('data/Pram_MetaData.csv')
 ```
 
-### Plot data over watershed boundries
-
-https://stackoverflow.com/questions/18174703/spatialpolygondataframe-plotting-using-ggplot
+## Reformat metadata
 
 ```{r}
-polys <- st_read('data/hydrologic_units_WBDHU12_mbr_3971222_03/hydrologic_units/wbdhu12_a_mbr.shp')
-# polys <- st_read('data/hydrologic_units_WBDHU10_mbr_3971222_02/hydrologic_units/wbdhu10_a_mbr.shp')
-ggplot(polys) +
-  geom_sf() + 
-  geom_point(data = metadata, mapping = aes(x = lon, y = lat)) + 
-  xlim(-124.5, -124.2) +
-  ylim(42.05, 42.4)
+metadata <- metadata %>%
+  rename(strain = isolate_id_orig,
+         isolate_id = "Isolate_ID(GL)",
+         gps_coord = "GPS Coordinates")
 ```
 
-Even the finest resolution watershed info available is not very detailed compared to the sample extent.
-
-
-### find which watersheds each sample is in
+Add "source" column as a hybrid of host and environment
 
 ```{r}
-watersheds <- readOGR('data/hydrologic_units_WBDHU12_mbr_3971222_03/hydrologic_units/wbdhu12_a_mbr.shp')
-metadata <- read_csv('data/curry_county_population_data_site_host_nextstrain.csv')
-
-# Assignment modified according
-meta_subset <- filter(metadata, !is.na(lon))
-coordinates(meta_subset) <- ~ lon + lat
-# Set the projection of the SpatialPointsDataFrame using the projection of the shapefile
-proj4string(meta_subset) <- proj4string(watersheds)
-meta_subset_placements <- as_tibble(over(meta_subset, watersheds))
-# Combine with metadata
-meta_subset$watershed <- meta_subset_placements$name
-metadata <- left_join(metadata, as_tibble(meta_subset)[, c("strain", "watershed")], by = "strain")
-```
-
-find centroid coordinates of each watershed
-
-```{r}
-centroid_data <- as_tibble(gCentroid(watersheds, byid = TRUE))
-colnames(centroid_data) <- c("watershed_lon", "watershed_lat")
-centroid_data <- bind_cols(watershed = watersheds@data$name, centroid_data)
-metadata <- left_join(metadata, centroid_data, by = "watershed")
-```
-
-
-add a finer resolution classification based on grids
-
-```{r}
-range(metadata$lat, na.rm = TRUE)
-range(metadata$lon, na.rm = TRUE)
-diff(range(metadata$lat, na.rm = TRUE))
-diff(range(metadata$lon, na.rm = TRUE))
-metadata$rounded_lat <- round(metadata$lat, digits = 2)
-metadata$rounded_lon <- round(metadata$lon, digits = 2)
-metadata$grid <- paste0(metadata$rounded_lat, ', ', metadata$rounded_lon)
-metadata$grid[metadata$grid == "NA, NA"] <- NA
+metadata <- metadata %>% 
+  mutate(source = paste(ifelse(is.na(Host_genus), "", Host_genus), ifelse(is.na(Host_species), "", Host_species)),
+         source = trimws(source),
+         source = ifelse(source == "", Host_Environment, source)) 
 ```
 
 fix date format
 
 ```{r}
-metadata$date <- paste0(metadata$year, '-01-01')
+metadata$date <- paste0(metadata$Year, '-01-01')
+```
+
+Clean up place names so it is easier to look up coordinates
+
+```{r}
+replace_key <- c(
+  "N.Ireland" = "Northern Ireland"
+)
+metadata$Country[metadata$Country %in% names(replace_key)] <- replace_key[metadata$Country[metadata$Country %in% names(replace_key)]]
 ```
 
 save metadata file
@@ -102,17 +67,24 @@ write_tsv(metadata, file = file.path('data', 'metadata_modified.tsv'))
 ## Make coordinate file
 
 ```{r}
-watershed_data <- metadata %>%
-  filter(!is.na(watershed)) %>%
-  mutate(group = "watershed") %>%
-  select(group, name = watershed, lat = watershed_lat, lon = watershed_lon) %>%
-  distinct()
-grid_data <- metadata %>%
-  filter(!is.na(grid)) %>%
-  mutate(group = "grid") %>%
-  select(group, name = grid, lat = rounded_lat,  lon = rounded_lon) %>%
-  distinct()
-coord_data <- bind_rows(watershed_data, grid_data)
+# https://gis.stackexchange.com/questions/240018/quickly-assign-coordinates-to-region-names-using-r
+options(geonamesUsername = "fosterz")
+get_coords <- function(name, group, ...) {
+  res <- GNsearch(name_equals = name, ...)  
+  if ("fcode" %in% colnames(res)) {
+    res <- filter(res, name == name, fcode %in% c("AREA", "PCLI", "ADM1"))
+  }
+  res <- res[1, ]
+  out <- tibble(group = group, name = name, lat = res$lat, lon = res$lng)
+  return(out)
+}
+
+coord_data <- bind_rows(
+  map_dfr(unique(metadata$Country, na.rm = TRUE), get_coords, group = 'Country'),
+  map_dfr(unique(metadata$State), get_coords, group = 'State', country = 'USA', fcode = "ADM1")
+) %>%
+  filter(!is.na(name))
+
 write_tsv(coord_data, file = file.path("config", "lat_longs.tsv"), col_names = FALSE)
 ```
 
@@ -126,10 +98,18 @@ First, I will remove the reference strain, since that gets assigned a date in 19
 dropped_ids <- c('MT_DQ832718.1')
 ```
 
-And all IDs associated with a missing location:
+And all IDs associated with a missing location or time:
 
 ```{r}
-dropped_ids <- c(dropped_ids, metadata$strain[is.na(metadata$lon)])
+dropped_ids <- c(dropped_ids, metadata$strain[is.na(metadata$Country)])
+dropped_ids <- c(dropped_ids, metadata$strain[is.na(metadata$Year)])
+```
+
+Ignore isolates with no FASTA sequence:
+
+```{r}
+seqs <- read_fasta("data/global_n661_mt.fasta")
+dropped_ids <- c(dropped_ids, metadata$strain[! metadata$strain %in% names(seqs)])
 ```
 
 And write the file, one ID per line:
