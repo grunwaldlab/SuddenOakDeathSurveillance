@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Make metadata file
 
 ```{r}
-library(rgeos)
+# library(rgeos)
 library(sp)
 library(sf)
-library(rgdal)
+# library(rgdal)
 library(tidyverse)
 library(ggplot2)
 library(viridis)
@@ -45,6 +45,9 @@ metadata <- metadata %>%
 fix date format
 
 ```{r}
+is_valid_date <- ! is.na(metadata$Year) & metadata$Year < 2025 & metadata$Year > 1600
+
+metadata <- metadata[is_valid_date, ]
 metadata$date <- paste0(metadata$Year, '-01-01')
 ```
 
