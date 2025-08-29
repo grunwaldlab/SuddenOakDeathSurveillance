@@ -7,16 +7,16 @@ seq_file = "data/global_n661_mt.fasta"
 meta_file = "data/metadata_modified.tsv"
 ref_file = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
 generef_file = "data/MT_DQ832718.1.gb"
-dropped_strains = "config/dropped_strains.txt"
+dropped_strains = "data/dropped_strains.txt"
 
 #reference_fasta = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
 #input_vcf = "data/genotyped_globaldiv_n44_mito_sb10m.abbr_head.vcf.gz"
 #input_meta = "data/globaldiv_n44.metadata.tsv"
 #reference_gb = "data/MT_DQ832718.1.gb"
 
-colors_file = "config/colors.tsv",
-geo_info_file = "config/lat_longs.tsv",
-config_file = "config/auspice_config.json"
+colors_file = "data/colors.tsv",
+geo_info_file = "data/lat_longs.tsv",
+config_file = "data/auspice_config.json"
 
 
 rule filter:
