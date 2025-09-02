@@ -1,0 +1,103 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Date: 
+clipr::write_clip(paste0('## ', format(Sys.time(), "%F (%A %B %e)\n\n")))
+# Date and time:
+clipr::write_clip(paste0('## ', format(Sys.time(), "%F %X %Z (%A %B %e)\n\n")))
+```
+
+## 2022-05-12 (Thursday May 12)
+
+Meeting with Val to discuss metadata for mitochondiral isolets
+
+## 2022-04-13 (Wednesday April 13)
+
+Metadata collection cannot be automated due to diverse sources.
+
+Start with a metadata file `pram_lookuptable_clean_added_info_lineages.tsv`
+
+Culture collection spreadsheet has info for some strains
+
+* location
+* lineage
+* year/date
+* host
+* environment
+
+
+## 2022-04-12 (Tuesday April 12)
+
+Met with Nick to discuss the organizing metadata for all ramorum isolates, instead of just curry county.
+
+## 2022-02-09 (Wednesday February  9)
+
+Read `kumar2016advances`. Notes are in the literature review.
+
+## 2022-02-02 (Wednesday February  2)
+
+read `nguyen2015iq`, `minh2020iq`, and `sagulenko2018treetime` which describe `IQ-TREE` and `TreeTime`.
+Notes are in the literature review.
+
+## 2022-02-01 (Tuesday February  1)
+
+Worked on cleaning up metadata code.
+
+It seems I can combine multiple analyses by simply adding to the `auspice` folder.
+I would need to clean up and restructure the pipeline file/folder layout in order to do that in readable way.
+`https://github.com/JianiC/rsv` does it with separate snakefiles in separate folders.
+I think it would also be possible with a single snakefile by either having separate input folders and use wildcards in the rules or ...
+
+Learned a lot about Snakemake.
+It is a very impressive pipeline workflow:
+  * It supports containers and conda.
+  * Files are python code
+  * Supports parallel computing and cluster/cloud environments
+  * Can run shell scripts, R/python scripts, bare code 
+
+Learning more about how augur works:
+  * `tree` uses `iqtree`, `raxml`, or `fasttree` (defualt: `iqtree`)
+  * `align` uses `mafft`
+  * `refine`, and `ancestral` are using the `treetime` module here: https://github.com/neherlab/treetime
+
+Next steps:
+  * integrate full dataset into the analysis.
+  * read about the tools `augur` is using
+  
+## 2022-01-31 (Monday January 31)
+  
+Notes from meeting recorded by Nick: 
+
+    colnames for curry county metadata
+    Switch sample name to ODF ID, probably will need to deduplicate
+    mating type - A1 / A2
+    environment - soil / plant / stream
+    ecosystem - nursery / forest
+    watershed (NA for nursery isolates)
+    host -> full names i.e. "Genus species"
+    contributor
+
+
+## 2022-01-24 (Monday January 24)
+
+Nik says give val an excel sheet to fill out host and nursery/forest.
+Think about how to code missing data.
+
+
+## 2022-01-10 (Monday January 10)
+
+
+Nik: Color nusery vs forest. Set divergence as default. Check if we can use a better time calibration method (eg beast); look into how the tree is built. Two datasets, one just curry, one global. Val can say which isolates are from nurseries. look into 1980.
+
+## 2022-01-03 (Monday January  3)
+
+Seems to be working, although the geographic layout could use some work.
+
+## 2022-01-02 (Sunday January  2)
+
+Worked on "prepare_metadata.Rmd" and fixing bugs in the analysis.
+
