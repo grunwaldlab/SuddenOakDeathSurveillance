@@ -9,24 +9,23 @@ library(viridis)
 library(ggmap)
 library(geonames)
 library(metacoder)
+library(argparser)
 
-# Replace the input and output options below with a command line argument parser using the argparser package AI!
-
-# Set input file paths
-metadata_path <- 'data/Pram_MetaData.csv'
-sample_fasta_path <- 'data/global_n661_mt.fasta'
-reference_fasta_path <- 'data/mtMartin2007_PR-102_v3.1.mt.fasta'
-
-# Set output file paths
-modified_metadata_output_path <- 'data/metadata_modified.tsv'
-coordinate_output_path <- 'data/lat_longs.tsv'
-color_output_path <- 'data/colors.tsv'
-dropped_output_path <- 'data/dropped_strains.txt'
+# Parse command line arguments
+parser <- arg_parser("Format input files for phylogenetic analysis with augur tools")
+parser <- add_argument(parser, "--metadata", help="Input metadata TSV file", default="data/Pram_MetaData.tsv")
+parser <- add_argument(parser, "--samples", help="Input sample FASTA file", default="data/global_n661_mt.fasta")
+parser <- add_argument(parser, "--reference", help="Input reference FASTA file", default="data/mtMartin2007_PR-102_v3.1.mt.fasta")
+parser <- add_argument(parser, "--metadata_out", help="Output modified metadata TSV file", default="data/metadata_modified.tsv")
+parser <- add_argument(parser, "--coordinate_out", help="Output coordinate TSV file", default="data/lat_longs.tsv")
+parser <- add_argument(parser, "--color_out", help="Output color TSV file", default="data/colors.tsv")
+parser <- add_argument(parser, "--dropped_out", help="Output dropped strains file", default="data/dropped_strains.txt")
+args <- parse_args(parser)
 
 # Parse input files
-metadata <- read_csv(metadata_path)
-reference_sequence <- read_fasta(reference_fasta_path)
-sample_sequences <- read_fasta(sample_fasta_path)
+metadata <- read_csv(args$metadata)
+reference_sequence <- read_fasta(args$reference)
+sample_sequences <- read_fasta(args$samples)
 
 # Reformat metadata column names
 metadata <- metadata %>%
@@ -106,7 +105,7 @@ country_as_state$group <- 'State'
 coord_data <- rbind(coord_data, country_as_state)
 
 # Write coordinate format
-write_tsv(coord_data, file = coordinate_output_path, col_names = FALSE)
+write_tsv(coord_data, file = args$coordinate_out, col_names = FALSE)
 
 # Make dropped strains file
 # These will be filtered out of the analysis:
@@ -121,7 +120,7 @@ seqs <- c(reference_sequence, sample_sequences)
 dropped_ids <- c(dropped_ids, metadata$strain[! metadata$strain %in% names(seqs)])
 
 # And write the file, one ID per line:
-write_lines(dropped_ids, file = dropped_output_path)
+write_lines(dropped_ids, file = args$dropped_out)
 
 # Remove dropped strains from metadata file since Nextstrain does not seem to always ignore them
 metadata <- metadata[! metadata$strain %in% dropped_ids, , drop = FALSE]
@@ -131,11 +130,11 @@ colnames(metadata)[colnames(metadata) == 'state'] <- 'State'
 colnames(metadata)[colnames(metadata) == 'country'] <- 'Country'
 
 # save metadata file
-write_tsv(metadata, file = modified_metadata_output_path)
+write_tsv(metadata, file = args$metadata_out)
 
 # Make color file
 color_data <- coord_data %>%
   select(group, name) %>%
   mutate(color = viridis(length(group)))
 color_data$color <- substr(color_data$color, start = 1, stop = 7)
-write_tsv(color_data, file = color_output_path, col_names = FALSE)
+write_tsv(color_data, file = args$color_out, col_names = FALSE)
