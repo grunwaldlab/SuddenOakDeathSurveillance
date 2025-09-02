@@ -10,6 +10,8 @@ library(ggmap)
 library(geonames)
 library(metacoder)
 
+# Replace the input and output options below with a command line argument parser using the argparser package AI!
+
 # Set input file paths
 metadata_path <- 'data/Pram_MetaData.csv'
 sample_fasta_path <- 'data/global_n661_mt.fasta'
