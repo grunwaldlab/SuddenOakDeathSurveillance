@@ -3,9 +3,9 @@ rule all:
         auspice_json = "auspice/nextstrainoomy.json"
 
 # Set input filenames
-seq_file = "data/global_n661_mt.fasta"
-meta_file = "data/metadata_modified.tsv"
-ref_file = "data/mtMartin2007_PR-102_v3.1.mt.fasta"
+seq_file = "data/ramorum_mito_genomes.fasta"
+meta_file = "data/formatted_metadata.tsv"
+ref_file = "data/martin2007_pr-102_v3.1_mito_ref.fasta"
 generef_file = "data/MT_DQ832718.1.gb"
 dropped_strains = "data/dropped_strains.txt"
 colors_file = "data/colors.tsv",
