@@ -1,0 +1,45 @@
+Isolate numbers	Other numbers	Source	Year	County or country	Colony phenotype	Contact
+MK106 (wt, oak)	MK106	Quercus agrifolia	2008	San Mateo	wt	M. Garbelotto
+MK516a (nwt, oak)	MK516a	Quercus agrifolia	2008	San Mateo	nwt	M. Garbelotto
+Mk516d (wt, oak)	MK516d	Quercus agrifolia	2008	San Mateo	wt	M. Garbelotto
+MK548 (wt, bay)	MK548	Umbellularia californica	2008	San Mateo	wt	M. Garbelotto
+MK558 (wt, oak)	MK558	Quercus agrifolia	2008	San Mateo	wt	M. Garbelotto
+MK649a (wt, bay)	MK649a	Umbellularia californica	2008	San Mateo	wt	M. Garbelotto
+MK649b (wt, bay)	MK649b	Umbellularia californica	2008	San Mateo	wt	M. Garbelotto
+MK79j (wt, bay)	MK79j	Umbellularia californica	2008	San Mateo	wt	M. Garbelotto
+ND83-2 (wt, rhododendron)	CDFA1418983-2	Rhododendron sp.	2004	Marin	wt	C. Blomquist
+ND886 (wt, camellia)	CDFA1418886	Camellia sp.	2004	Marin	wt	C. Blomquist
+ND886_QA#7 (wt, camellia->oak)	QA_E_7	(Re) ND886 from Q. agrifolia	2013	n/a	wt	T. Kasuga
+ND886_QA#9 (wt, camellia->oak)	QA_E_9	(Re) ND886 from Q. agrifolia	2013	n/a	wt	T. Kasuga
+ND886_RH#11 (wt, camellia->rhododendron)	RH_E_11#4	(Re) ND886 from rhododendron	2013	n/a	wt	T. Kasuga
+ND886_RH#8 (wt, camellia->rhododendron)	RH_E_8	(Re) ND886 from rhododendron	2013	n/a	wt	T. Kasuga
+ND886_UC#1 (wt, camellia->bay)	UC_E_1#6	(Re) ND886 from U. californica	2013	n/a	wt	T. Kasuga
+ND886_VT#7 (wt, camellia->Viburnum tinus)	VT_E_7	(Re) ND886 from V. tinus 	2013	n/a	wt	T. Kasuga
+P2346 (nwt, C. lawsoniana)	P2346	Chamaecyparis lawsoniana, bottom of the lesion	2010	UK	nwt	J. Webber & C. Brasier
+P2363 (wt, C. lawsoniana)	P2363	Chamaecyparis lawsoniana, middle of the lesion	2010	UK	wt	J. Webber & C. Brasier
+P2386 (nwt, C. lawsoniana)	P2386	Chamaecyparis lawsoniana, top of the lesion	2010	UK	nwt	J. Webber & C. Brasier
+Pr-102 (nwt, oak)	Pr102	Quercus agrifolia	2001	Marin	nwt	D. Rizzo
+Pr-102_RH#9 (wt, oak->rhododendron)	RH_W_9	(Re) Pr-102 from rhododendron	2013	n/a	wt	T. Kasuga
+Pr-102_UC#1 (wt, oak->bay)	UC_W_1#2	(Re) Pr-102 from U. californica	2013	n/a	wt	T. Kasuga
+Pr-102_UC#4 (wt, oak->bay)	UC_W_4#8	(Re) Pr-102 from U. californica	2013	n/a	wt	T. Kasuga
+Pr-1556 (wt, bay)	Bay4-11	Umbellularia californica	2011	Santa Clara	wt	T. Kasuga
+Pr-1556#2 (wt, bay->race tube)	Bay4-11#2	(Re) Pr-1556 from race tube	2013	n/a	wt	T. Kasuga
+Pr-1556#24 (wt, bay->oak)	168RY-24	(Re) Pr-1556 from Q. chrysolepsis	2013	n/a	wt	T. Kasuga
+Pr-1556#24#3 (nwt, bay->oak->race tube)	168RY-24 #3	(Re) Pr-1556 from Q. chrysolepsis & race tube	2013	n/a	nwt	T. Kasuga
+Pr-1556#7 (wt, bay->oak)	168RY-7	(Re) Pr-1556 from Q. chrysolepsis	2013	n/a	wt	T. Kasuga
+Pr-1556#7#1 (nwt, bay->oak->race tube)	168RY-7 #1	(Re) Pr-1556 from Q. chrysolepsis & race tube	2013	n/a	nwt	T. Kasuga
+Pr-1557 (wt, bay)	Bay4-16	Umbellularia californica	2011	Santa Clara	wt	T. Kasuga
+Pr-1557#2 (wt, bay->oak)	162RR2	(Re) Pr-1557 from Q. chrysolepsis	2013	n/a	wt	T. Kasuga
+Pr-1557#6 (wt, bay->oak)	168RR6	(Re) Pr-1557 from Q. chrysolepsis	2013	n/a	wt	T. Kasuga
+Pr-140.7 (nwt, oak)	Pr140-7 2/2 QPS348	Quercus parvula var. shrevii	2014	Santa Clara	nwt	Phytosphere Res.
+Pr-140.9 (wt, oak)	Pr140-9 1/2 QPS348	Quercus parvula var. shrevii	2014	Santa Clara	wt	Phytosphere Res.
+Pr-16 (nwt, oak)	Pr16	Quercus agrifolia	2000	Santa Cruz	nwt	D. Rizzo
+Pr-35 (nwt, oak)	Pr35	Quercus agrifolia	2000	Sonoma	nwt	D. Rizzo
+Pr-710 (wt, bay)	Pr710	Umbellularia californica	2009	Santa Clara	wt	K. Aram
+Pr-710#1 (wt, bay->oak)	Pr1098	(Re) Pr-710 from Q. chrysolepsis	2011	n/a	wt	K. Aram
+Pr-710#2 (nwt, bay->oak)	Pr1192	(Re) Pr-710 from Q. chrysolepsis	2011	n/a	nwt	K. Aram
+Pr-745 (wt, bay)	Pr745	rain water near infected U. californica	2010	Santa Clara	wt	Phytosphere Res.
+Pr-745#1 (wt, bay->oak)	Pr1102	(Re) Pr-745 from Q. chrysolepsis	2011	n/a	wt	K. Aram
+Pr-745#2 (nwt, bay->oak)	Pr1215	(Re) Pr-745 from Q. chrysolepsis	2011	n/a	nwt	K. Aram
+Pr-745#3 (nwt, bay->oak)	Pr1197	(Re) Pr-745 from Q. chrysolepsis	2011	n/a	nwt	K. Aram
+Pr-745#4 (nwt, bay->oak)	Pr1068	(Re) Pr-745 from Q. chrysolepsis	2011	n/a	nwt	K. Aram

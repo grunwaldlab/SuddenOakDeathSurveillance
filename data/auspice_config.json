@@ -1,0 +1,51 @@
+{
+  "title": "Phytophthora ramorum isolates worldwide",
+  "maintainers": [
+    {"name": "Zachary Foster"},
+    {"name": "Andrew Tupper"},
+    {"name": "Nick Carleson"},
+    {"name": "Niklaus Grunwald"}
+  ],
+  "build_url": "",
+  "colorings": [
+    {
+      "key": "lineage",
+      "title": "Lineage",
+      "type": "categorical"
+    },
+    {
+      "key": "host_species",
+      "title": "Host Species",
+      "type": "categorical"
+    },
+    {
+      "key": "host_genus",
+      "title": "Host Genus",
+      "type": "categorical"
+    },
+    {
+      "key": "environment",
+      "title": "Environment",
+      "type": "categorical"
+    },
+    {
+      "key": "Country",
+      "title": "Country",
+      "type": "categorical"
+    }
+  ],
+  "geo_resolutions": [
+    "Country",
+    "State"
+  ],
+  "display_defaults": {
+    "color_by": "lineage",
+    "geo_resolution": "State",
+    "distance_measure": "div",
+    "map_triplicate": false,
+    "layout": "rect",
+    "transmission_lines": true
+  },
+  "filters": [
+  ]
+}

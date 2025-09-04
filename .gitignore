@@ -138,7 +138,7 @@ dmypy.json
 *.html
 
 results/
-old/results/
-old/auspice/
-data/
 .aider*
+
+# Temporary files
+.~*#
