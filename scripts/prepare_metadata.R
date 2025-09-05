@@ -38,6 +38,22 @@ colnames(metadata) <- tolower(colnames(metadata))
 # Check that all sequences have metadata
 stopifnot(all(sample_headers %in% metadata$strain))
 
+# Standardize sp./spp/sp 
+metadata$host_species <- ifelse(
+  metadata$host_species %in% c('sp', 'sp.', 'spp'),
+  'sp.',
+  metadata$host_species
+)
+
+# make species lowercase
+metadata$host_species <- tolower(metadata$host_species)
+
+# Add genus to species name
+metadata$host_species <- ifelse(
+  is.na(metadata$host_genus) | is.na(metadata$host_species),
+  NA, 
+  paste(metadata$host_genus, metadata$host_species)
+)
 
 # Identify source of samples for use in publication
 parse_and_standardize_tsv <- function(path) {
@@ -54,10 +70,10 @@ extract_data <- function(table, id_cols, table_id) {
   map_dfr(id_cols, function(col) {
     is_found <- table[[col]] %in% metadata$strain
     data.frame(
-      table = ifelse(any(is_found), table_id, character(0)),
-      col = ifelse(any(is_found), col, character(0)),
+      source = table_id,
+      col = col,
       index = which(is_found),
-      id = ifelse(any(is_found), table[[col]][is_found], character(0))
+      id = table[[col]][is_found]
     )
   })
 }
@@ -70,11 +86,11 @@ elliott_2018_data$year <- elliott_2018_data_raw$year[elliott_2018_data$index]
 elliott_2018_data$country <- 'USA'
 elliott_2018_data$state <- gsub(pattern = '^.+, ', replacement = '', elliott_2018_data_raw$county_and_state[elliott_2018_data$index])
 elliott_2018_data$county <- gsub(pattern = ',? ?(WA|CA)$', replacement = '', elliott_2018_data_raw$county_and_state[elliott_2018_data$index])
-elliott_2018_data$lineage <- 'NA'
-elliott_2018_data$species <- elliott_2018_data_raw$source[elliott_2018_data$index]
+elliott_2018_data$lineage <- 'NA1'
+elliott_2018_data$host_species <- elliott_2018_data_raw$source[elliott_2018_data$index]
 invaild_names <- c("Stream bait", "(Re) Pr-1556 from coast live oak log", "(Re) Pr-745 from Q. chrysolepis")
-elliott_2018_data$species[elliott_2018_data$species %in% invaild_names] <- NA
-elliott_2018_data$genus <- gsub(pattern = ' .+$', replacement = '', elliott_2018_data$species)
+elliott_2018_data$host_species[elliott_2018_data$host_species %in% invaild_names] <- NA
+elliott_2018_data$host_genus <- gsub(pattern = ' .+$', replacement = '', elliott_2018_data$host_species)
 
 kasuga_2016_data_raw <- parse_and_standardize_tsv('data/metadata_references/kasuga_2016.tsv')
 kasuga_2016_data_raw$isolate_numbers <- sub(kasuga_2016_data_raw$isolate_numbers, pattern = ' \\(.+\\)$', replacement = '')
@@ -83,11 +99,11 @@ kasuga_2016_data$year <- kasuga_2016_data_raw$year[kasuga_2016_data$index]
 kasuga_2016_data$country <- ifelse(kasuga_2016_data_raw$county_or_country[kasuga_2016_data$index] == 'UK', 'UK', 'USA')
 kasuga_2016_data$state <- ifelse(kasuga_2016_data_raw$county_or_country[kasuga_2016_data$index] == 'UK', NA, 'CA')
 kasuga_2016_data$county <- ifelse(kasuga_2016_data_raw$county_or_country[kasuga_2016_data$index] == 'UK', NA, kasuga_2016_data_raw$county_or_country[kasuga_2016_data$index])
-kasuga_2016_data$lineage <- 'NA'
-kasuga_2016_data$species <- sub(pattern = ', .+$', replacement = '', kasuga_2016_data_raw$source[kasuga_2016_data$index])
+kasuga_2016_data$lineage <- 'NA1'
+kasuga_2016_data$host_species <- sub(pattern = ', .+$', replacement = '', kasuga_2016_data_raw$source[kasuga_2016_data$index])
 invaild_names <- c("rain water near infected U. californica")
-kasuga_2016_data$species[kasuga_2016_data$species %in% invaild_names] <- NA
-kasuga_2016_data$genus <- gsub(pattern = ' .+$', replacement = '', kasuga_2016_data$species)
+kasuga_2016_data$host_species[kasuga_2016_data$host_species %in% invaild_names] <- NA
+kasuga_2016_data$host_genus <- gsub(pattern = ' .+$', replacement = '', kasuga_2016_data$host_species)
 
 # Nick: "University of exeter are likely david studholme's group. Ramorum metadata is in table 1 for lines 5-20 (https://www.sciencedirect.com/science/article/pii/S2213596017300247)"
 turner_2017_data_raw <- parse_and_standardize_tsv('data/metadata_references/turner_2017.tsv')
@@ -97,10 +113,10 @@ turner_2017_data$country <- 'UK'
 turner_2017_data$state <- turner_2017_data_raw$county[turner_2017_data$index]
 turner_2017_data$county <- turner_2017_data_raw$county[turner_2017_data$index]
 turner_2017_data$lineage <- 'EU1'
-turner_2017_data$species <- turner_2017_data_raw$source[turner_2017_data$index]
+turner_2017_data$host_species <- turner_2017_data_raw$source[turner_2017_data$index]
 invaild_names <- c()
-turner_2017_data$species[turner_2017_data$species %in% invaild_names] <- NA
-turner_2017_data$genus <- gsub(pattern = ' .+$', replacement = '', turner_2017_data$species)
+turner_2017_data$host_species[turner_2017_data$host_species %in% invaild_names] <- NA
+turner_2017_data$host_genus <- gsub(pattern = ' .+$', replacement = '', turner_2017_data$host_species)
 
 # Nick: "Univ of british columbia are richard hamelin's group, published in Dale 2019."
 gl_data_raw <- parse_and_standardize_tsv('data/metadata_references/GL_no_record.tsv')
@@ -111,10 +127,10 @@ dale_2019_data$country <- ifelse(dale_2019_data_raw$location[dale_2019_data$inde
 dale_2019_data$state <- ifelse(dale_2019_data_raw$location[dale_2019_data$index] == "BC, Canada", "British Columbia", NA)
 dale_2019_data$county <- NA
 dale_2019_data$lineage <- dale_2019_data_raw$lineage[dale_2019_data$index]
-dale_2019_data$species <- dale_2019_data_raw$host[dale_2019_data$index]
+dale_2019_data$host_species <- dale_2019_data_raw$host[dale_2019_data$index]
 invaild_names <- c('unknown')
-dale_2019_data$species[dale_2019_data$species %in% invaild_names] <- NA
-dale_2019_data$genus <- gsub(pattern = ' .+$', replacement = '', dale_2019_data$species)
+dale_2019_data$host_species[dale_2019_data$host_species %in% invaild_names] <- NA
+dale_2019_data$host_genus <- gsub(pattern = ' .+$', replacement = '', dale_2019_data$host_species)
 
 # Nick: "sequenced in Jared's lab for Hazel's thesis. All from curry county forest."
 daniels_2021_data_raw <- parse_and_standardize_tsv('data/metadata_references/curry_county.tsv')
@@ -134,8 +150,8 @@ host_key <- c(
   "SOIL" = NA
 )
 stopifnot(all(daniels_2021_data_raw$host %in% names(host_key) | is.na(daniels_2021_data_raw$host)))
-daniels_2021_data$species <- host_key[daniels_2021_data_raw$host]
-daniels_2021_data$genus <- gsub(pattern = ' .+$', replacement = '', daniels_2021_data$species)
+daniels_2021_data$host_species <- host_key[daniels_2021_data_raw$host]
+daniels_2021_data$host_genus <- gsub(pattern = ' .+$', replacement = '', daniels_2021_data$host_species)
 
 # Nick: " More work from Takao's group, published in Yuzon 2020."
 yuzon_2020_xml <- read_xml('data/metadata_references/yuzon_2020.xml')
@@ -145,17 +161,18 @@ yuzon_2020_data_raw <- map_dfr(strsplit(yuzon_2020_data_chr, '_'), function(part
   names(parts) <- c('id', 'location', 'year', 'host', 'tissue')
   as.data.frame(as.list(parts))
 })
-yuzon_2020_data <- extract_data(table = yuzon_2020_data_raw, id_cols = 'id', table_id = 'Daniels 2021')
+yuzon_2020_data <- extract_data(table = yuzon_2020_data_raw, id_cols = 'id', table_id = 'Yzon et al. 2020')
 yuzon_2020_data$year <- yuzon_2020_data_raw$year[yuzon_2020_data$index]
 yuzon_2020_data$country <- 'USA'
 yuzon_2020_data$state <- 'CA'
 yuzon_2020_data$county <- yuzon_2020_data_raw$location[yuzon_2020_data$index]
+yuzon_2020_data$county <- gsub(yuzon_2020_data$county, pattern = '-', replacement = ' ')
 yuzon_2020_data$lineage <- 'NA1'
-yuzon_2020_data$species <- yuzon_2020_data_raw$host[yuzon_2020_data$index]
-yuzon_2020_data$species <- gsub(pattern = '-', replacement = ' ', yuzon_2020_data$species)
+yuzon_2020_data$host_species <- yuzon_2020_data_raw$host[yuzon_2020_data$index]
+yuzon_2020_data$host_species <- gsub(pattern = '-', replacement = ' ', yuzon_2020_data$host_species)
 invaild_names <- c('rainwater', 'stream')
-yuzon_2020_data$species[yuzon_2020_data$species %in% invaild_names] <- NA
-yuzon_2020_data$genus <- gsub(pattern = ' .+$', replacement = '', yuzon_2020_data$species)
+yuzon_2020_data$host_species[yuzon_2020_data$host_species %in% invaild_names] <- NA
+yuzon_2020_data$host_genus <- gsub(pattern = ' .+$', replacement = '', yuzon_2020_data$host_species)
 
 combined_ref_data <- rbind(
   elliott_2018_data,
@@ -166,17 +183,31 @@ combined_ref_data <- rbind(
   yuzon_2020_data
 )
 
+# When multiple ID columns match an ID, check that they have the same metadata
+n_unique_meta <- sapply(split(combined_ref_data, combined_ref_data$id), function(part) {
+  nrow(unique(part[, ! colnames(part) %in% c('source','col', 'index')]))
+})
+non_unique_ids <- names(n_unique_meta[n_unique_meta > 1])
+non_unique_data <- combined_ref_data[combined_ref_data$id %in% non_unique_ids, ]
+non_unique_data <- non_unique_data[order(non_unique_data$id), ]
+non_unique_data # Only one sample had a difference in metadata between sources, 2004 vs 2003.
 
+# When IDs are included in multiple datasets, choose the oldest to be the source
+combined_ref_data$publication_year <- as.numeric(sub(combined_ref_data$source, pattern = '.+ ([0-9]{4})$', replacement = '\\1'))
+combined_ref_data <- map_dfr(split(combined_ref_data, combined_ref_data$id), function(part) {
+  unique_id_data <- unique(part[, ! colnames(part) %in% c('col', 'index')])
+  unique_id_data[which.min(unique_id_data$publication_year), , drop = FALSE]
+})
+stopifnot(nrow(combined_ref_data) == length(unique(combined_ref_data$id)))
 
-# Standardize sp./spp/sp 
-metadata$host_species <- ifelse(
-  metadata$host_species %in% c('sp', 'sp.', 'spp'),
-  'sp.',
-  metadata$host_species
-)
-
-# make species lowercase
-metadata$host_species <- tolower(metadata$host_species)
+# Use combined reference metadata when available
+stopifnot(all(combined_ref_data$id %in% metadata$strain))
+metadata$source <- 'Culture collection'
+common_cols <- colnames(combined_ref_data)[colnames(combined_ref_data) %in%  colnames(metadata)]
+for (col in common_cols) {
+  non_na_subset <- combined_ref_data[!is.na(combined_ref_data[[col]]) & !combined_ref_data[[col]] == '', , drop = FALSE]
+  metadata[match(non_na_subset$id, metadata$strain), col] <- non_na_subset[[col]]
+}
 
 # Remove invalid genus data
 metadata$host_genus <- ifelse(
@@ -185,12 +216,19 @@ metadata$host_genus <- ifelse(
   metadata$host_genus
 )
 
-# Add genus to species name
-metadata$host_species <- ifelse(
-  is.na(metadata$host_genus) | is.na(metadata$host_species),
-  NA, 
-  paste(metadata$host_genus, metadata$host_species)
-)
+# Rename rare genera and species to "other"
+condense_rare <- function(values, min_count) {
+  counts <- table(values)
+  rare <- names(counts)[counts < min_count]
+  values[values %in% rare] <- 'Other'
+  values
+}
+metadata$host_genus <- condense_rare(metadata$host_genus, 3)
+metadata$host_species <- condense_rare(metadata$host_species, 3)
+
+# Replace sp./spp/sp/nothing in genus with "Other" 
+metadata$host_species[grepl(metadata$host_species, pattern = ' sp|spp|sp\\.$')] <- 'Other'
+metadata$host_species[grepl(metadata$host_species, pattern = '^ *[a-zA-Z]+ *$')] <- 'Other'
 
 # Add reference to the metadata file so that its date can be controlled
 metadata <- rbind(rep(NA, ncol(metadata)), metadata)
