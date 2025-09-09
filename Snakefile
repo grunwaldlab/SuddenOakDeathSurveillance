@@ -94,6 +94,7 @@ rule refine:
             --metadata {input.metadata} \
             --timetree \
             --coalescent {params.coal} \
+            --root Plat_SMSTG \
             --output-tree {output.tree} \
             --output-node-data {output.node_data}
         """

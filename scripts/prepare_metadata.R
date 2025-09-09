@@ -20,7 +20,7 @@ parser <- add_argument(parser, "--dropped_out", help="Output dropped strains fil
 args <- parse_args(parser)
 
 # Parse input files
-metadata <- read.csv(args$metadata, check.names = FALSE)
+metadata <- read_csv(args$metadata)
 parse_fasta_headers <- function(path) {
   lines <- readLines(path)
   headers <- lines[grepl(lines, pattern = '^>')]
@@ -120,7 +120,7 @@ turner_2017_data$host_genus <- gsub(pattern = ' .+$', replacement = '', turner_2
 
 # Nick: "Univ of british columbia are richard hamelin's group, published in Dale 2019."
 gl_data_raw <- parse_and_standardize_tsv('data/metadata_references/GL_no_record.tsv')
-dale_2019_data_raw <- gl_data[! is.na(gl_data$center_name) & gl_data$center_name == 'UNIVERSITY OF BRITISH COLUMBIA', ]
+dale_2019_data_raw <- gl_data_raw[! is.na(gl_data_raw$center_name) & gl_data_raw$center_name == 'UNIVERSITY OF BRITISH COLUMBIA', ]
 dale_2019_data <- extract_data(table = dale_2019_data_raw, id_cols = c('isolate_id'), table_id = 'Dale et al. 2019')
 dale_2019_data$year <- dale_2019_data_raw$year[dale_2019_data$index]
 dale_2019_data$country <- ifelse(dale_2019_data_raw$location[dale_2019_data$index] == "BC, Canada", "Canada", "France")
@@ -174,14 +174,18 @@ invaild_names <- c('rainwater', 'stream')
 yuzon_2020_data$host_species[yuzon_2020_data$host_species %in% invaild_names] <- NA
 yuzon_2020_data$host_genus <- gsub(pattern = ' .+$', replacement = '', yuzon_2020_data$host_species)
 
-combined_ref_data <- rbind(
+combined_ref_data <- tibble::as_tibble(rbind(
   elliott_2018_data,
   kasuga_2016_data,
   turner_2017_data,
   dale_2019_data,
   daniels_2021_data,
   yuzon_2020_data
-)
+))
+combined_ref_data$year <- as.numeric(combined_ref_data$year)
+
+# Make empty chars NA
+combined_ref_data[] <- lapply(combined_ref_data[], function(x) ifelse(x == '', NA, x))
 
 # When multiple ID columns match an ID, check that they have the same metadata
 n_unique_meta <- sapply(split(combined_ref_data, combined_ref_data$id), function(part) {
@@ -242,26 +246,41 @@ metadata$date <- paste0(metadata$year, '-01-01')
 
 # Clean up place names so it is easier to look up coordinates
 replace_key <- c(
-  "N.Ireland" = "Ireland"
+  "USA" = 'United States',
+  "N.Ireland" = "Ireland",
+  "UK" = "United Kingdom",
+  "CA" = "California",
+  "OR" = "Oregon", 
+  "NC" = "North Carolina",
+  "SC" = "South Carolina", 
+  "WA" = "Washington",
+  "GA" = "Georgia",
+  "MS" = "Mississippi"
 )
 metadata$country[metadata$country %in% names(replace_key)] <- replace_key[metadata$country[metadata$country %in% names(replace_key)]]
+metadata$state[metadata$state %in% names(replace_key)] <- replace_key[metadata$state[metadata$state %in% names(replace_key)]]
+
+# Check if any rows have coordinates but no placenames
+any(is.na(metadata$country) & (!is.na(metadata$gps_coord) & !is.na(metadata$lat)))
+any(is.na(metadata$state) & (!is.na(metadata$gps_coord) & !is.na(metadata$lat)))
 
 # Make coordinate file
 options(geonamesUsername = "fosterz")
-get_coords <- function(name, group, ...) {
-  res <- geonames::GNsearch(name_equals = name, ...)  
-  if ("fcode" %in% colnames(res)) {
-    res <- res[res$fcode %in% c("AREA", "PCLI", "ADM1"), , drop = FALSE]
+get_coords <- function(name, group, country = NULL, ...) {
+  res <- geonames::GNsearch(name_equals = name, ...)
+  if (!is.null(country) && "countryName" %in% colnames(res)) {
+    res <- res[res$countryName == country, , drop = FALSE]
   }
-  res <- res[1, ]
+  res <- res[order(as.numeric(res$population), decreasing = TRUE)[1], ]
   out <- data.frame(group = group, name = name, lat = res$lat, lon = res$lng, stringsAsFactors = FALSE)
   return(out)
 }
-coord_data <- do.call(rbind, c(
-  lapply(unique(metadata$country, na.rm = TRUE), get_coords, group = 'Country'),
-  lapply(unique(metadata$state), get_coords, group = 'State', country = 'USA', fcode = "ADM1")
-))
-coord_data <- coord_data[coord_data$name != "" & ! is.na(coord_data$name), ]
+
+coord_data <- rbind(
+  map_dfr(unique(metadata$country[!is.na(metadata$country)]), get_coords, group = 'Country'),
+  map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'United States']), get_coords, group = 'State', country = 'United States'),
+  map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'United Kingdom']), get_coords, group = 'State', country = 'United Kingdom')
+)
 
 # Add country names to state variable when a state is not available
 metadata$state <- ifelse(is.na(metadata$state) | metadata$state == '', metadata$country, metadata$state)
