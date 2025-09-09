@@ -17,7 +17,7 @@ parser <- add_argument(parser, "--metadata_out", help="Output modified metadata 
 parser <- add_argument(parser, "--coordinate_out", help="Output coordinate TSV file", default="data/lat_longs.tsv")
 parser <- add_argument(parser, "--color_out", help="Output color TSV file", default="data/colors.tsv")
 parser <- add_argument(parser, "--dropped_out", help="Output dropped strains file", default="data/dropped_strains.txt")
-parser <- add_argument(parser, "--max_colors", help="Maximum number of colors used to display categorical variables", default=8)
+parser <- add_argument(parser, "--max_colors", help="Maximum number of colors used to display categorical variables", default=10)
 args <- parse_args(parser)
 
 # Parse input files
@@ -279,10 +279,6 @@ country_as_state <- coord_data[coord_data$group == 'Country', ]
 country_as_state$group <- 'State'
 coord_data <- rbind(coord_data, country_as_state)
 
-# Write coordinate format
-write.table(coord_data, file = args$coordinate_out,
-            col.names = FALSE, row.names = FALSE, na = '', sep = '\t', quote = FALSE)
-
 # Make dropped strains file
 missing_country <- is.na(metadata$country) | metadata$country == ''
 invalid_date <- is.na(metadata$year) | metadata$year > 2025 | metadata$year < 1600
@@ -290,17 +286,27 @@ missing_seq <- ! metadata$strain %in% c(ref_header, sample_headers)
 dropped_ids <- metadata$strain[missing_country | invalid_date | missing_seq]
 writeLines(dropped_ids, con = args$dropped_out)
 
-# Remove dropped strains from metadata file since Nextstrain does not seem to always ignore them
-metadata <- metadata[! metadata$strain %in% dropped_ids, , drop = FALSE]
-
 # Capitalize some column names for display purposes
 colnames(metadata)[colnames(metadata) == 'state'] <- 'State'
 colnames(metadata)[colnames(metadata) == 'country'] <- 'Country'
 
+# Subset coord_data to just places present in metadata after filtering
+coord_data <- map_dfr(split(coord_data, coord_data$group), function(part) {
+  part[part$name %in% metadata[[part$group[1]]], ]
+})
+
+# Write coordinate file
+write.table(coord_data, file = args$coordinate_out,
+            col.names = FALSE, row.names = FALSE, na = '', sep = '\t', quote = FALSE)
+
+
+# Remove dropped strains from metadata file since Nextstrain does not seem to always ignore them
+metadata <- metadata[! metadata$strain %in% dropped_ids, , drop = FALSE]
+
 # Rename rare categories to "other"
 condense_rare <- function(values, max_count) {
   counts <- table(values)
-  if (length(counts) > max_count - 1) {
+  if (length(counts) > max_count) {
     common <- names(sort(counts, decreasing = TRUE))[seq_len(max_count - 1)]
     values[! values %in% common] <- 'Other'
   }
@@ -308,7 +314,7 @@ condense_rare <- function(values, max_count) {
 }
 metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
 metadata$host_species <- condense_rare(metadata$host_species, args$max_colors)
-metadata$lineage <- condense_rare(metadata$host_species, args$max_colors)
+metadata$lineage <- condense_rare(metadata$lineage, args$max_colors)
 
 
 # Save metadata file
@@ -319,19 +325,30 @@ write.table(metadata, file = args$metadata_out,
 color_data <- coord_data[, c('group', 'name')]
 color_data <- do.call(rbind, lapply(split(color_data, color_data$group), function(part) {
   group <- part$group[1]
-  metadata[[group]]
-  part$color <- viridis(nrow(part))
+  ordered_values <- names(sort(table(metadata[[group]]), decreasing = TRUE))
+  ordered_values <- ordered_values[ordered_values %in% part$name]
+  part <- part[match(ordered_values, part$name), ]
+  if (nrow(part) > args$max_colors) {
+    part$color <- c(viridis(args$max_colors, direction = -1), rep('#555555FF', nrow(part) - args$max_colors))
+  } else {
+    part$color <- viridis(nrow(part), direction = -1)
+  }
   return(part)
 }))
 
-ordered_values <- names(sort(table(metadata$host_genus), decreasing = TRUE))
-ordered_values <- c(ordered_values[ordered_values != 'Other'], 'Other')
-data.frame(
-  group = 'host_genus',
-  name = names(sort(table(metadata$host_genus), decreasing = TRUE))[seq_len(args$max_colors - 1)],
-  color = c(viridis(length(ordered_values) - 1), '#555555FF')
-)
-
+other_color_data <- map_dfr(c('host_genus', 'host_species', 'lineage'), function(col) {
+  ordered_values <- names(sort(table(metadata[[col]]), decreasing = TRUE))
+  if ('Other' %in% ordered_values) {
+    ordered_values <- c(ordered_values[ordered_values != 'Other'], 'Other')
+  }
+  data.frame(
+    group = col,
+    name = ordered_values,
+    color = c(viridis(length(ordered_values) - 1, direction = -1), '#555555FF'),
+    stringsAsFactors = FALSE
+  )
+})
+color_data <- rbind(color_data, other_color_data)
 
 color_data$color <- substr(color_data$color, start = 1, stop = 7)
 write.table(color_data, file = args$color_out,
