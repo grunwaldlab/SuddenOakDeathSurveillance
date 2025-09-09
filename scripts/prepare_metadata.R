@@ -17,6 +17,7 @@ parser <- add_argument(parser, "--metadata_out", help="Output modified metadata 
 parser <- add_argument(parser, "--coordinate_out", help="Output coordinate TSV file", default="data/lat_longs.tsv")
 parser <- add_argument(parser, "--color_out", help="Output color TSV file", default="data/colors.tsv")
 parser <- add_argument(parser, "--dropped_out", help="Output dropped strains file", default="data/dropped_strains.txt")
+parser <- add_argument(parser, "--max_colors", help="Maximum number of colors used to display categorical variables", default=8)
 args <- parse_args(parser)
 
 # Parse input files
@@ -220,16 +221,6 @@ metadata$host_genus <- ifelse(
   metadata$host_genus
 )
 
-# Rename rare genera and species to "other"
-condense_rare <- function(values, min_count) {
-  counts <- table(values)
-  rare <- names(counts)[counts < min_count]
-  values[values %in% rare] <- 'Other'
-  values
-}
-metadata$host_genus <- condense_rare(metadata$host_genus, 3)
-metadata$host_species <- condense_rare(metadata$host_species, 3)
-
 # Replace sp./spp/sp/nothing in genus with "Other" 
 metadata$host_species[grepl(metadata$host_species, pattern = ' sp|spp|sp\\.$')] <- 'Other'
 metadata$host_species[grepl(metadata$host_species, pattern = '^ *[a-zA-Z]+ *$')] <- 'Other'
@@ -306,6 +297,20 @@ metadata <- metadata[! metadata$strain %in% dropped_ids, , drop = FALSE]
 colnames(metadata)[colnames(metadata) == 'state'] <- 'State'
 colnames(metadata)[colnames(metadata) == 'country'] <- 'Country'
 
+# Rename rare categories to "other"
+condense_rare <- function(values, max_count) {
+  counts <- table(values)
+  if (length(counts) > max_count - 1) {
+    common <- names(sort(counts, decreasing = TRUE))[seq_len(max_count - 1)]
+    values[! values %in% common] <- 'Other'
+  }
+  values
+}
+metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
+metadata$host_species <- condense_rare(metadata$host_species, args$max_colors)
+metadata$lineage <- condense_rare(metadata$host_species, args$max_colors)
+
+
 # Save metadata file
 write.table(metadata, file = args$metadata_out,
             col.names = TRUE, row.names = FALSE, na = '', sep = '\t', quote = FALSE)
@@ -313,9 +318,21 @@ write.table(metadata, file = args$metadata_out,
 # Make color file
 color_data <- coord_data[, c('group', 'name')]
 color_data <- do.call(rbind, lapply(split(color_data, color_data$group), function(part) {
+  group <- part$group[1]
+  metadata[[group]]
   part$color <- viridis(nrow(part))
   return(part)
 }))
+
+ordered_values <- names(sort(table(metadata$host_genus), decreasing = TRUE))
+ordered_values <- c(ordered_values[ordered_values != 'Other'], 'Other')
+data.frame(
+  group = 'host_genus',
+  name = names(sort(table(metadata$host_genus), decreasing = TRUE))[seq_len(args$max_colors - 1)],
+  color = c(viridis(length(ordered_values) - 1), '#555555FF')
+)
+
+
 color_data$color <- substr(color_data$color, start = 1, stop = 7)
 write.table(color_data, file = args$color_out,
             col.names = TRUE, row.names = FALSE, na = '', sep = '\t', quote = FALSE)
