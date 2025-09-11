@@ -1,64 +1,111 @@
 group	name	color
-Country	United States	#FDE725
-Country	Vietnam	#B4DE2C
-Country	Canada	#6DCD59
-Country	England	#35B779
-Country	United Kingdom	#1F9E89
-Country	Japan	#26828E
-Country	France	#31688E
-Country	Germany	#3E4A89
-Country	Ireland	#482878
+Country	United States	#BBDF27
+Country	Vietnam	#7AD151
+Country	Canada	#43BF71
+Country	England	#22A884
+Country	United Kingdom	#21908C
+Country	Japan	#2A788E
+Country	France	#35608D
+Country	Germany	#414487
+Country	Ireland	#482576
 Country	Scotland	#440154
 Country	Belgium	#555555
 Country	Netherlands	#555555
-State	California	#FDE725
-State	Vietnam	#B4DE2C
-State	England	#6DCD59
-State	Oregon	#35B779
-State	Washington	#1F9E89
-State	Japan	#26828E
-State	France	#31688E
-State	United Kingdom	#3E4A89
-State	Cornwall	#482878
-State	Germany	#440154
-State	Georgia	#555555
-State	Ireland	#555555
-State	South Carolina	#555555
-State	Scotland	#555555
-State	Belgium	#555555
-State	Cheshire	#555555
-State	Devon	#555555
-State	Dorset	#555555
+Location	California, United States	#BBDF27
+Location	Vietnam	#7AD151
+Location	British Columbia, Canada	#43BF71
+Location	England	#22A884
+Location	Oregon, United States	#21908C
+Location	Washington, United States	#2A788E
+Location	Japan	#35608D
+Location	France	#414487
+Location	Cornwall, United Kingdom	#482576
+Location	Germany	#440154
+Location	Georgia, United States	#555555
+Location	Ireland	#555555
+Location	South Carolina, United States	#555555
+Location	Scotland	#555555
+Location	Belgium	#555555
+Location	Cheshire, United Kingdom	#555555
+Location	Devon, United Kingdom	#555555
+Location	Dorset, United Kingdom	#555555
+Location	Mississippi, United States	#555555
+Location	Netherlands	#555555
+Location	North Carolina, United States	#555555
+Location	West Sussex, United Kingdom	#555555
+State	California	#BBDF27
+State	British Columbia	#7AD151
+State	Oregon	#43BF71
+State	Washington	#22A884
+State	Cornwall	#21908C
+State	Georgia	#2A788E
+State	South Carolina	#35608D
+State	Cheshire	#414487
+State	Devon	#482576
+State	Dorset	#440154
 State	Mississippi	#555555
-State	Netherlands	#555555
 State	North Carolina	#555555
 State	West Sussex	#555555
-host_genus	Notholithocarpus	#FDE725
-host_genus	Rhododendron	#AADC32
-host_genus	Umbellularia	#5DC863
-host_genus	Camellia	#27AD81
+host_genus	Notholithocarpus	#BBDF27
+host_genus	Rhododendron	#7AD151
+host_genus	Umbellularia	#43BF71
+host_genus	Camellia	#22A884
 host_genus	Larix	#21908C
-host_genus	Quercus	#2C728E
-host_genus	Viburnum	#3B528B
-host_genus	Chamaecyparis	#472D7B
-host_genus	Kalmia	#440154
-host_genus	Other	#555555
-host_species	Notholithocarpus densiflorus	#FDE725
-host_species	Umbellularia californica	#9FDA3A
-host_species	Larix kaempferi	#4AC16D
-host_species	Rhododendron macrophyllum	#1FA187
-host_species	Quercus agrifolia	#277F8E
-host_species	Camellia japonica	#365C8D
-host_species	Viburnum tinus	#46337E
-host_species	Chamaecyparis lawsoniana	#440154
-host_species	Other	#555555
-lineage	NA1	#FDE725
-lineage	EU1	#AADC32
-lineage	IC1	#5DC863
-lineage	NA2	#27AD81
+host_genus	Quercus	#2A788E
+host_genus	Viburnum	#35608D
+host_genus	Chamaecyparis	#414487
+host_genus	Kalmia	#482576
+host_genus	Pieris	#440154
+host_genus	Vaccinium	#666666
+host_genus	Arbutus	#666666
+host_genus	Choisya	#666666
+host_genus	Cinnamomum	#666666
+host_genus	Fagus	#666666
+host_genus	Gaultheria	#666666
+host_genus	Laurus	#666666
+host_genus	Osmorhiza	#666666
+host_genus	Rhamnus	#666666
+host_genus	Abies	#666666
+host_genus	Acer	#666666
+host_genus	Adiantum	#666666
+host_genus	Ardisia	#666666
+host_genus	Castanea	#666666
+host_genus	Corylus	#666666
+host_genus	Distyllium	#666666
+host_genus	Frangula	#666666
+host_genus	Leucothoe	#666666
+host_genus	Lysimachia	#666666
+host_genus	Molinadendron	#666666
+host_genus	Neolitsea	#666666
+host_genus	Nothofagus	#666666
+host_genus	Osmanthus	#666666
+host_genus	Sequoia	#666666
+host_genus	Sonoma	#666666
+host_genus	Toxicodendron	#666666
+host_genus	Unknown	#444444
+host_species	Notholithocarpus densiflorus	#BBDF27
+host_species	Umbellularia californica	#7AD151
+host_species	Larix kaempferi	#43BF71
+host_species	Rhododendron macrophyllum	#22A884
+host_species	Quercus agrifolia	#21908C
+host_species	Camellia japonica	#2A788E
+host_species	Viburnum tinus	#35608D
+host_species	Chamaecyparis lawsoniana	#414487
+host_species	Kalmia latifolia	#482576
+host_species	Vaccinium ovatum	#440154
+host_species	Choisya ternata	#666666
+host_species	Cinnamomum camphora	#666666
+host_species	Fagus sylvatica	#666666
+host_species	Other	#666666
+host_species	Unknown	#444444
+lineage	NA1	#BBDF27
+lineage	EU1	#7AD151
+lineage	IC1	#43BF71
+lineage	NA2	#22A884
 lineage	EU2	#21908C
-lineage	NP1	#2C728E
-lineage	NP2	#3B528B
-lineage	IC3	#472D7B
-lineage	IC5	#440154
-lineage	NP3	#555555
+lineage	NP1	#2A788E
+lineage	NP2	#35608D
+lineage	IC3	#414487
+lineage	IC5	#482576
+lineage	NP3	#440154
+lineage	Unknown	#444444

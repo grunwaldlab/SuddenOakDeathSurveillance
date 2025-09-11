@@ -1,5 +1,3 @@
-# Format input files
-
 # Load libraries
 library(viridis)
 library(geonames)
@@ -221,9 +219,9 @@ metadata$host_genus <- ifelse(
   metadata$host_genus
 )
 
-# Replace sp./spp/sp/nothing in genus with "Other" 
-metadata$host_species[grepl(metadata$host_species, pattern = ' sp|spp|sp\\.$')] <- 'Other'
-metadata$host_species[grepl(metadata$host_species, pattern = '^ *[a-zA-Z]+ *$')] <- 'Other'
+# Replace sp./spp/sp/nothing in genus with "Unknown" 
+metadata$host_species[grepl(metadata$host_species, pattern = ' sp|spp|sp\\.$')] <- 'Unknown'
+metadata$host_species[grepl(metadata$host_species, pattern = '^ *[a-zA-Z]+ *$')] <- 'Unknown'
 
 # Add reference to the metadata file so that its date can be controlled
 metadata <- rbind(rep(NA, ncol(metadata)), metadata)
@@ -231,6 +229,7 @@ metadata$strain[1] <- ref_header[1]
 metadata$year[1] <- 2016
 metadata$country[1] <- 'USA'
 metadata$state[1] <- 'CA'
+metadata$notes <- 'Reference'
 
 # fix date format
 metadata$date <- paste0(metadata$year, '-01-01')
@@ -266,18 +265,33 @@ get_coords <- function(name, group, country = NULL, ...) {
   out <- data.frame(group = group, name = name, lat = res$lat, lon = res$lng, stringsAsFactors = FALSE)
   return(out)
 }
-
-coord_data <- rbind(
-  map_dfr(unique(metadata$country[!is.na(metadata$country)]), get_coords, group = 'Country'),
+country_coord_data <- map_dfr(unique(metadata$country[!is.na(metadata$country)]), get_coords, group = 'Country')
+state_coord_data <- rbind(
   map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'United States']), get_coords, group = 'State', country = 'United States'),
-  map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'United Kingdom']), get_coords, group = 'State', country = 'United Kingdom')
+  map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'United Kingdom']), get_coords, group = 'State', country = 'United Kingdom'),
+  map_dfr(unique(metadata$state[!is.na(metadata$state) & metadata$country == 'Canada']), get_coords, group = 'State', country = 'Canada')
 )
 
-# Add country names to state variable when a state is not available
-metadata$state <- ifelse(is.na(metadata$state) | metadata$state == '', metadata$country, metadata$state)
-country_as_state <- coord_data[coord_data$group == 'Country', ]
-country_as_state$group <- 'State'
-coord_data <- rbind(coord_data, country_as_state)
+# Make a column for location that includes both the state and the country
+metadata$Location <- ifelse(is.na(metadata$state), metadata$country, paste(metadata$state, metadata$country, sep = ', '))
+
+# Remove location values for samples with countries for which other samples have states
+countries_with_states <- unique(metadata$country[! is.na(metadata$state) & ! is.na(metadata$country)])
+metadata$Location[is.na(metadata$state) & metadata$country %in% countries_with_states] <- NA
+
+all_locations <- unique(metadata$Location[! is.na(metadata$Location)])
+location_coord_data <- map_dfr(all_locations, function(x) {
+  if (x %in% country_coord_data$name) {
+    out <- country_coord_data[x == country_coord_data$name, , drop = FALSE]
+  } else {
+    out <- state_coord_data[startsWith(x, state_coord_data$name), , drop = FALSE]
+  }
+  return(out)
+})
+location_coord_data$group <- "Location"
+location_coord_data$name <- all_locations
+
+coord_data <- rbind(country_coord_data, state_coord_data, location_coord_data)
 
 # Make dropped strains file
 missing_country <- is.na(metadata$country) | metadata$country == ''
@@ -299,7 +313,6 @@ coord_data <- map_dfr(split(coord_data, coord_data$group), function(part) {
 write.table(coord_data, file = args$coordinate_out,
             col.names = FALSE, row.names = FALSE, na = '', sep = '\t', quote = FALSE)
 
-
 # Remove dropped strains from metadata file since Nextstrain does not seem to always ignore them
 metadata <- metadata[! metadata$strain %in% dropped_ids, , drop = FALSE]
 
@@ -312,9 +325,12 @@ condense_rare <- function(values, max_count) {
   }
   values
 }
-metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
-metadata$host_species <- condense_rare(metadata$host_species, args$max_colors)
-metadata$lineage <- condense_rare(metadata$lineage, args$max_colors)
+# metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
+metadata$host_species <- condense_rare(metadata$host_species, args$max_colors + 5)
+# metadata$lineage <- condense_rare(metadata$lineage, args$max_colors)
+
+# Replace NA with "unknown"
+metadata[] <- lapply(metadata, function(col) ifelse(is.na(col), "Unknown", col))
 
 
 # Save metadata file
@@ -329,9 +345,9 @@ color_data <- do.call(rbind, lapply(split(color_data, color_data$group), functio
   ordered_values <- ordered_values[ordered_values %in% part$name]
   part <- part[match(ordered_values, part$name), ]
   if (nrow(part) > args$max_colors) {
-    part$color <- c(viridis(args$max_colors, direction = -1), rep('#555555FF', nrow(part) - args$max_colors))
+    part$color <- c(viridis(args$max_colors, direction = -1, end = 0.9), rep('#555555FF', nrow(part) - args$max_colors))
   } else {
-    part$color <- viridis(nrow(part), direction = -1)
+    part$color <- viridis(nrow(part), direction = -1, end = 0.9)
   }
   return(part)
 }))
@@ -341,12 +357,26 @@ other_color_data <- map_dfr(c('host_genus', 'host_species', 'lineage'), function
   if ('Other' %in% ordered_values) {
     ordered_values <- c(ordered_values[ordered_values != 'Other'], 'Other')
   }
-  data.frame(
-    group = col,
-    name = ordered_values,
-    color = c(viridis(length(ordered_values) - 1, direction = -1), '#555555FF'),
-    stringsAsFactors = FALSE
-  )
+  if ('Unknown' %in% ordered_values) {
+    ordered_values <- c(ordered_values[ordered_values != 'Unknown'], 'Unknown')
+  }
+  if (length(ordered_values) > args$max_colors) {
+    out <- data.frame(
+      group = col,
+      name = ordered_values,
+      color = c(viridis(args$max_colors, direction = -1, end = 0.9), rep('#666666FF', length(ordered_values) - args$max_colors)),
+      stringsAsFactors = FALSE
+    )
+  } else {
+    out <- data.frame(
+      group = col,
+      name = ordered_values,
+      color = viridis(length(ordered_values), direction = -1, end = 0.9),
+      stringsAsFactors = FALSE
+    )
+  }
+  out$color <- ifelse(out$name == 'Unknown', '#444444FF', out$color)
+  return(out)
 })
 color_data <- rbind(color_data, other_color_data)
 
