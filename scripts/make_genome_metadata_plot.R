@@ -14,7 +14,8 @@ categories <- c(
   lineage = "Lineage",
   host_species = "Host", 
   year = "Year",
-  Country = "Country"
+  Country = "Country",
+  source = "Source"
 )
 
 # Prepare data for plotting
@@ -30,38 +31,50 @@ plot_data <- bind_rows(lapply(names(categories), function(col) {
   }
   return(out)
 })) %>%
-  mutate(category = factor(category, levels = c("Lineage", "Host", "Year", "Country"))) %>%
+  mutate(category = factor(category, levels = c("Lineage", "Host", "Year", "Country", "Source"))) %>%
   arrange(value == "Unknown", value == "Other") %>%
   mutate(value = factor(value, levels = unique(value)))
 
-# Create custom color palette
-category_colors <- c(
-  "Lineage" = "#1f77b4",
-  "Host" = "#ff7f0e", 
-  "Year" = "#2ca02c",
-  "Country" = "#d62728"
+# Create custom lineage color palette
+lineage_colors <- c(
+  "NA1" = "#1f77b4",
+  "EU1" = "#ff7f0e", 
+  "NA2" = "#2ca02c",
+  "EU2" = "#d62728",
+  "NP1" = "#9467bd",
+  "NP2" = "#8c564b",
+  "NP3" = "#e377c2",
+  "IC1" = "#7f7f7f",
+  "IC3" = "#bcbd22",
+  "IC5" = "#17becf",
+  "Unknown" = "#444444"
 )
 
+# Add lineage information to plot data for coloring
+plot_data_with_lineage <- plot_data %>%
+  left_join(metadata %>% select(strain, lineage), by = c("value" = "strain")) %>%
+  mutate(lineage = ifelse(is.na(lineage), 
+                         ifelse(category == "Lineage", value, "Unknown"), 
+                         lineage))
+
+# For non-strain values, assign lineage based on the category
+plot_data_with_lineage <- plot_data %>%
+  mutate(lineage = case_when(
+    category == "Lineage" ~ value,
+    TRUE ~ "Unknown"
+  ))
+
 # Create plot
-abund_plot <- ggplot(plot_data, aes(x = value, y = n, fill = category)) +
+abund_plot <- ggplot(plot_data_with_lineage, aes(x = value, y = n, fill = lineage)) +
   geom_col() +
-  facet_grid(.~category, scales = "free_x", space = "free_x",
-             labeller = labeller(category = setNames(names(category_colors), names(category_colors)))) +
-  scale_fill_manual(values = category_colors) +
+  facet_grid(.~category, scales = "free_x", space = "free_x") +
+  scale_fill_manual(values = lineage_colors, name = "Lineage") +
   labs(x = NULL, y = "Number of genomes") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 60, hjust = 1),
-        legend.position = "none",
         panel.grid.major.x = element_blank(),
         strip.text = element_text(face = "bold")) +
-  scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
-  # Handle special cases for Unknown/Other
-  geom_col(data = subset(plot_data, value %in% c("Unknown", "Other")), 
-           aes(fill = value)) +
-  scale_fill_manual(values = c(category_colors, 
-                               "Unknown" = "#444444", 
-                               "Other" = "#666666"),
-                    guide = "none")
+  scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 abund_plot
 ggsave(abund_plot, path = 'results', filename = 'genome_abundance_plot.pdf', height = 3, width = 9)
 ggsave(abund_plot, path = 'results', filename = 'genome_abundance_plot.png', height = 3, width = 9)
