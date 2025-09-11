@@ -6,6 +6,9 @@ library(tidyr)
 metadata <- read.delim("data/formatted_metadata.tsv", sep="\t", stringsAsFactors = FALSE)
 metadata$year <- as.character(metadata$year)
 
+# Remove reference sequence
+metadata <- metadata[metadata$notes != "Reference", , drop = FALSE]
+
 # Define categories to plot with their display names
 categories <- c(
   lineage = "Lineage",
