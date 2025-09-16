@@ -55,34 +55,7 @@ host_genus	Quercus	#2A788E
 host_genus	Viburnum	#35608D
 host_genus	Chamaecyparis	#414487
 host_genus	Kalmia	#482576
-host_genus	Pieris	#440154
-host_genus	Vaccinium	#666666
-host_genus	Arbutus	#666666
-host_genus	Choisya	#666666
-host_genus	Cinnamomum	#666666
-host_genus	Fagus	#666666
-host_genus	Gaultheria	#666666
-host_genus	Laurus	#666666
-host_genus	Osmorhiza	#666666
-host_genus	Rhamnus	#666666
-host_genus	Abies	#666666
-host_genus	Acer	#666666
-host_genus	Adiantum	#666666
-host_genus	Ardisia	#666666
-host_genus	Castanea	#666666
-host_genus	Corylus	#666666
-host_genus	Distyllium	#666666
-host_genus	Frangula	#666666
-host_genus	Leucothoe	#666666
-host_genus	Lysimachia	#666666
-host_genus	Molinadendron	#666666
-host_genus	Neolitsea	#666666
-host_genus	Nothofagus	#666666
-host_genus	Osmanthus	#666666
-host_genus	Sequoia	#666666
-host_genus	Sonoma	#666666
-host_genus	Toxicodendron	#666666
-host_genus	Unknown	#444444
+host_genus	Other	#440154
 host_species	Notholithocarpus densiflorus	#BBDF27
 host_species	Umbellularia californica	#7AD151
 host_species	Larix kaempferi	#43BF71

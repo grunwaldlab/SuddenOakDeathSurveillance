@@ -229,7 +229,7 @@ metadata$strain[1] <- ref_header[1]
 metadata$year[1] <- 2016
 metadata$country[1] <- 'USA'
 metadata$state[1] <- 'CA'
-metadata$notes <- 'Reference'
+metadata$notes[1] <- 'Reference'
 
 # fix date format
 metadata$date <- paste0(metadata$year, '-01-01')
@@ -325,12 +325,13 @@ condense_rare <- function(values, max_count) {
   }
   values
 }
-# metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
+metadata$host_genus <- condense_rare(metadata$host_genus, args$max_colors)
 metadata$host_species <- condense_rare(metadata$host_species, args$max_colors + 5)
-# metadata$lineage <- condense_rare(metadata$lineage, args$max_colors)
+metadata$lineage <- condense_rare(metadata$lineage, args$max_colors)
 
 # Replace NA with "unknown"
-metadata[] <- lapply(metadata, function(col) ifelse(is.na(col), "Unknown", col))
+plotted_cols <- c('lineage', 'host_genus', 'host_species', 'year', 'Country', 'State', 'county', 'town', 'host_environment', 'sample_type', 'Location')
+metadata[plotted_cols] <- lapply(metadata[plotted_cols], function(col) ifelse(is.na(col), "Unknown", col))
 
 
 # Save metadata file

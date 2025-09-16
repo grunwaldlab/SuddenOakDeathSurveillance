@@ -1,9 +1,7 @@
 {
-  "title": "Analysis of Phytophthora ramorum mitochondrial genomes worldwide",
+  "title": "Phytophthora ramorum mitochondrial genome diversity worldwide",
   "maintainers": [
     {"name": "Zachary Foster"},
-    {"name": "Andrew Tupper"},
-    {"name": "Nick Carleson"},
     {"name": "Niklaus Grunwald"}
   ],
   "build_url": "",
@@ -32,15 +30,20 @@
       "key": "Country",
       "title": "Country",
       "type": "categorical"
+    },
+    {
+      "key": "source",
+      "title": "Source",
+      "type": "categorical"
     }
   ],
   "geo_resolutions": [
     "Country",
-    "State"
+    "Location"
   ],
   "display_defaults": {
     "color_by": "lineage",
-    "geo_resolution": "State",
+    "geo_resolution": "Location",
     "distance_measure": "div",
     "map_triplicate": false,
     "layout": "rect",
