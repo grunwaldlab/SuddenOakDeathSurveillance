@@ -2,7 +2,7 @@
 
 This project implements a Snakemake pipeline for genomic biosurveillance of *Phytophthora ramorum*, the oomycete pathogen responsible for sudden oak death (SOD). The pipeline analyzes mitochondrial genome sequences to create interactive phylogenetic visualizations that monitor the emergence of new variants and clonal lineages of the SOD pathogen.
 
-This the repository for the source code used to create the visualization which is hosted at https://nextstrain.org/community/grunwaldlab/nextstrainoomy.
+This the repository for the source code used to create the visualization which is hosted at https://nextstrain.org/community/grunwaldlab/SuddenOakDeathSurveillance.
 
 ## Requirements
 
