@@ -81,5 +81,5 @@ abund_plot <- ggplot(plot_data, aes(x = value, y = n, fill = lineage)) +
         strip.text = element_text(face = "bold")) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.05)))
 abund_plot
-ggsave(abund_plot, path = 'results', filename = 'genome_abundance_plot.pdf', height = 3, width = 9)
-ggsave(abund_plot, path = 'results', filename = 'genome_abundance_plot.png', height = 3, width = 9, bg = 'white')
+ggsave(abund_plot, path = 'figures', filename = 'genome_abundance_plot.pdf', height = 3, width = 9)
+ggsave(abund_plot, path = 'figures', filename = 'genome_abundance_plot.png', height = 3, width = 9, bg = 'white')
