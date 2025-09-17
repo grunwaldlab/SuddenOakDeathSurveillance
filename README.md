@@ -36,7 +36,7 @@ Then open your browser to the displayed URL.
 The repository includes a ~700 mitochondrial genomes of *P. ramorum* sampled between 1995 and 2019 from around the world.
 Only sequences associated with a known date and location were included in the analysis.
 
-![](results/genome_abundance_plot.png)
+![](https://raw.githubusercontent.com/grunwaldlab/SuddenOakDeathSurveillance/refs/heads/main/figures/genome_abundance_plot.png)
 
 ## Input Data
 
