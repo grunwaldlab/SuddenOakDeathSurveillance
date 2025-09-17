@@ -1,6 +1,6 @@
 rule all:
     input:
-        auspice_json = "auspice/nextstrainoomy.json"
+        auspice_json = "auspice/SuddenOakDeathSurveillance.json"
 
 # Set input filenames
 seq_file = "data/ramorum_mito_genomes.fasta"

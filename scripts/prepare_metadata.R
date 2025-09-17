@@ -298,6 +298,7 @@ missing_country <- is.na(metadata$country) | metadata$country == ''
 invalid_date <- is.na(metadata$year) | metadata$year > 2025 | metadata$year < 1600
 missing_seq <- ! metadata$strain %in% c(ref_header, sample_headers)
 dropped_ids <- metadata$strain[missing_country | invalid_date | missing_seq]
+dropped_ids <- c(dropped_ids, 'CC2176', 'CC2275', 'CC1011', 'CC1033')
 writeLines(dropped_ids, con = args$dropped_out)
 
 # Capitalize some column names for display purposes
